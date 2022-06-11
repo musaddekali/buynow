@@ -1,0 +1,10 @@
+footer.footer {
+  padding: 30px 0;
+  background: var(--accent);
+  color: #fff;
+}
+
+footer.footer .copyright {
+  display: flex;
+  justify-content: space-between;
+}

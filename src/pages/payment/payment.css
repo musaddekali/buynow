@@ -1,0 +1,29 @@
+.payment-items {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  gap: 0.5rem;
+}
+
+.payment-item {
+  padding: 1.5rem;
+  border-radius: 0.25rem;
+  box-shadow: var(--shadow-sm);
+  display: grid;
+  place-items: center;
+  word-break: break-word;
+  cursor: pointer;
+  transition: 0.3s ease-in-out;
+  background: var(--secondary);
+  color: #fff;
+}
+
+.payment-item span {
+  font-size: 18px;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: 1px;
+}
+
+.payment-item:hover {
+  box-shadow: var(--shadow);
+}
