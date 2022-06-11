@@ -1,0 +1,45 @@
+.profile-hd {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.profile-hd img {
+  width: 128px;
+  height: 128px;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.upload-area .btn {
+  width: 128px;
+  font-size: 14px;
+}
+
+.upload-area .upload-icon {
+  font-size: 1rem;
+  margin-right: 0.25rem;
+}
+
+.profile-item {
+  margin-bottom: 0.5rem;
+}
+
+.profile-bd {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+  padding: 1rem;
+  margin: 1.5rem 0;
+}
+
+.profile-item-title {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--gray-700);
+  margin-bottom: 0.5rem;
+}
+
+.profile-item-info {
+  font-size: 14px;
+  font-weight: 700;
+}

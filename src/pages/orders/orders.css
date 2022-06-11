@@ -1,0 +1,27 @@
+.order-nav {
+  background: var(--gray-200);
+  margin-bottom: 1.5rem;
+}
+
+.order-nav-list {
+  display: flex;
+}
+
+.order-nav-list li {
+  font-size: 14px;
+  line-height: 1.5;
+  padding: 8px 24px;
+  display: block;
+  border-bottom: 2px solid transparent;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.order-nav-list li:hover {
+  background: var(--gray-300);
+}
+
+.order-nav-list li.active {
+  border-color: var(--primary);
+  font-weight: 700;
+}

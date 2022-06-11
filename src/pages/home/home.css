@@ -1,0 +1,32 @@
+.products .product-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 0.5rem;
+}
+
+.product-list .card {
+  transition: 0.2s;
+}
+
+.product-list .card:hover {
+  box-shadow: var(--shadow);
+}
+
+.product-list .card-title {
+  color: var(--black);
+  line-height: 1.3;
+}
+
+.product-list .card-title:hover {
+  color: var(--secondary);
+}
+
+.btn.card-wishlist {
+  font-size: 20px;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.btn.card-wishlist:hover {
+  color: var(--secondary);
+}
