@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { BsEmojiSmile, BsBox, BsHeart, BsBoxArrowLeft } from "react-icons/bs";
 import "./nav-menu.css";
 import Img from "../../assets/images/coffeeCup.jpg";
+import { useGlobalContext } from "../../context/context";
 
 const NavmenuGuestLink = () => {
   return (
@@ -85,6 +86,8 @@ const NavmenuUserLink = () => {
 };
 
 const NavMenu = () => {
+  const { totalQuantity } = useGlobalContext();
+
   return (
     <header className="header fixed-top">
       <nav className="nav-menu">
@@ -110,7 +113,7 @@ const NavMenu = () => {
             <NavmenuUserLink />
             <Link className="cart nav-a nav-menu-height" to="/cart">
               <div className="cart-badge-wrap">
-                <span className="count">55</span>
+                <span className="count">{totalQuantity}</span>
                 <span className="nav-cart-icon">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

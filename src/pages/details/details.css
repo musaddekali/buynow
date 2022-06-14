@@ -1,52 +1,4 @@
-.pd-img-big img {
-  width: 100%;
-  height: 100%;
-  object-fit: contain;
-}
-
-.img-thumbs-wrap {
-  position: relative;
-}
-
-.img-thumb-arrows {
-  position: absolute;
-  top: 50%;
-  left: 0;
-  right: 0;
-  transform: translateY(-50%);
-}
-
-.img-thumb-arrows .arrow-left,
-.img-thumb-arrows .arrow-right {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 30px;
-  height: 50px;
-  outline: none;
-  border: 1px solid transparent;
-  background: #fff;
-  transition: borde-color 0.3s;
-}
-
-.img-thumb-arrows .arrow-left:hover,
-.img-thumb-arrows .arrow-right:hover {
-  border-color: var(--primary);
-}
-
-.img-thumb-arrows .arrow-right {
-  right: 0;
-}
-
-.pd-img-thumbs {
-  display: flex;
-  flex-wrap: nowrap;
-  margin-top: 0.75rem;
-  padding: 4px 34px 4px 34px;
-  border-radius: 0.25rem;
-}
-
-.pd-img-thumb {
+.product-details .carousel .thumb {
   margin-right: 0.5rem;
   border-radius: 0.5rem;
   border: 1px solid transparent;
@@ -54,13 +6,14 @@
   cursor: pointer;
 }
 
-.pd-img-thumb:hover {
-  border-color: var(--primary);
+.product-details .carousel .thumb.selected,
+.product-details .carousel .thumb:hover {
+  border: 1px solid var(--primary);
 }
 
-.pd-img-thumb img {
-  max-width: 50px;
-  height: 50px;
+.product-details .carousel .thumb img {
+  width: 100%;
+  height: 100%;
   object-fit: cover;
 }
 
