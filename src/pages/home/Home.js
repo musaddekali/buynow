@@ -5,6 +5,8 @@ import { useGlobalContext } from '../../context/context';
 const Home = () => {
   const { products } = useGlobalContext();
 
+  console.log('environ key->', process.env.REACT_APP_APP_ID)
+
   return (
     <section className="products">
       <div className="container">
