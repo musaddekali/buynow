@@ -1,7 +1,10 @@
 import './home.css';
 import ProductCard from './ProductCard';
+import { useGlobalContext } from '../../context/context';
 
 const Home = () => {
+  const { products } = useGlobalContext();
+
   return (
     <section className="products">
       <div className="container">
@@ -9,11 +12,11 @@ const Home = () => {
           <h3>Our Products</h3>
         </div>
         <div className="product-list">
-            <ProductCard/>
-            <ProductCard/>
-            <ProductCard/>
-            <ProductCard/>
-            <ProductCard/>
+          {
+            products.map(pro => (
+              <ProductCard key={pro.id} product={pro} />
+            ))
+          }
         </div>
       </div>
     </section>
