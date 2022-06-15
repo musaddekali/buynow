@@ -10,12 +10,13 @@ const Cart = () => {
 
   // Remove Item
   const handleItemRemove = async (itemId) => {
-    try {
-      const docRef = doc(db, "cart", `${itemId}`);
-      await deleteDoc(docRef);
-      console.log("Item deleted id->", itemId);
-    } catch (e) {
-      console.log("Remove item error -> ", e);
+    if (window.confirm('Do you want to Delete this item?')) {
+      try {
+        const docRef = doc(db, "cart", `${itemId}`);
+        await deleteDoc(docRef);
+      } catch (e) {
+        console.log("Remove item error -> ", e);
+      }
     }
   };
 
@@ -29,7 +30,6 @@ const Cart = () => {
         quantity: cartExistItem.quantity + 1,
       };
       await updateDoc(docRef, data);
-      console.log("Increment");
     } catch (e) {
       console.log("Product Increment Error -> ", e);
     }
@@ -37,18 +37,17 @@ const Cart = () => {
 
   // Quantity Decrement
   const decrement = async (itemId) => {
-   try {
-    const docRef = doc(db, "cart", `${itemId}`);
-    const cartExistItem = cart.find((item) => item.id === itemId);
-    const data = {
-      ...cartExistItem,
-      quantity: cartExistItem.quantity - 1,
-    };
-    cartExistItem.quantity >= 2 && (await updateDoc(docRef, data));
-    console.log("Decrement");
-   } catch (e) {
+    try {
+      const docRef = doc(db, "cart", `${itemId}`);
+      const cartExistItem = cart.find((item) => item.id === itemId);
+      const data = {
+        ...cartExistItem,
+        quantity: cartExistItem.quantity - 1,
+      };
+      cartExistItem.quantity >= 2 && (await updateDoc(docRef, data));
+    } catch (e) {
       console.log('Product Decrement Error ->', e)
-   }
+    }
   };
 
   return (

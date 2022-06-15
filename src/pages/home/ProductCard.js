@@ -1,42 +1,8 @@
 import { Link } from "react-router-dom";
 import { BsHeart } from "react-icons/bs";
-import { doc, setDoc, Timestamp, updateDoc } from "firebase/firestore";
-import { db } from "../../context/firebase";
-import { useGlobalContext } from "../../context/context";
 
-const ProductCard = ({ product }) => {
+const ProductCard = ({ product, handleAddToCart }) => {
   const { id, title, images, price } = product;
-  const { cart } = useGlobalContext();
-
-  // if product available on cart then update it otherwise add
-  const handleAddToCart = async (itemId) => {
-    try {
-      const ref = doc(db, "cart", `${itemId}`);
-      const cartExistItem = cart.find((item) => item.id === itemId);
-      if (cartExistItem) {
-        // update 
-        await updateDoc(ref, {
-          ...cartExistItem,
-          quantity: cartExistItem.quantity + 1,
-        });
-        console.log("Updated SuccessFully", cartExistItem);
-        return;
-      }
-      // add 
-      await setDoc(ref, {
-        id,
-        title,
-        image: images[0],
-        price,
-        quantity: 1,
-        createdAt: Timestamp.fromDate(new Date()),
-      });
-      console.log("New Item Added -> ");
-
-    } catch (e) {
-      console.log("Add To Cart Error -> ", e);
-    }
-  };
 
   return (
     <div className="d-flex align-items-stretch justify-content-center mb-2">
