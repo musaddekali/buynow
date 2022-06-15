@@ -1,43 +1,16 @@
-import { doc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { BsDash, BsPlus, BsTrash } from 'react-icons/bs';
-import { Link } from 'react-router-dom';
-import { useGlobalContext } from '../../context/context';
-import { db } from '../../context/firebase';
+import { BsDash, BsPlus, BsTrash } from "react-icons/bs";
+import { Link } from "react-router-dom";
 
-const CartItem = ({ id, title, price, image, quantity }) => {
-  const { cart } = useGlobalContext();
-  const docRef = doc(db, 'cart', `${id}`);
-  // Remove Item 
-  const handleItemRemove = async () => {
-    try {
-      await deleteDoc(docRef);
-      console.log('Item deleted id->', id);
-    } catch (e) {
-      console.log("Remove item error -> ", e);
-    }
-  }
-
-  // Quantity Increment 
-  const increment = async () => {
-    const cartExistItem = cart.find(item => item.id === id);
-    const data = {
-      ...cartExistItem,
-      quantity: cartExistItem.quantity + 1
-    }
-    await updateDoc(docRef, data);
-    console.log('Increment');
-  }
-  // Quantity Decrement 
-  const decrement = async () => {
-    const cartExistItem = cart.find(item => item.id === id);
-    const data = {
-      ...cartExistItem,
-      quantity: cartExistItem.quantity - 1
-    }
-    cartExistItem.quantity >= 2 && await updateDoc(docRef, data);
-    console.log('Decrement');
-  }
-
+const CartItem = ({
+  id,
+  title,
+  price,
+  image,
+  quantity,
+  handleItemRemove,
+  increment,
+  decrement,
+}) => {
   return (
     <div className="card-hr">
       <div className="card-hr-hd">
@@ -57,7 +30,7 @@ const CartItem = ({ id, title, price, image, quantity }) => {
         <div className="card-hr-price">
           <span className="price">${price}</span>
           <button
-            onClick={handleItemRemove}
+            onClick={() => handleItemRemove(id)}
             className="btn card-hr-remove"
           >
             <BsTrash />
@@ -66,14 +39,14 @@ const CartItem = ({ id, title, price, image, quantity }) => {
         <div className="quantity-count-wrap">
           <div className="quantity-count-in">
             <button
-              onClick={decrement}
+              onClick={() => decrement(id)}
               className="btn primary-btn decrement-btn"
             >
               <BsDash />
             </button>
             <input type="text" readOnly value={quantity} />
             <button
-              onClick={increment}
+              onClick={() => increment(id)}
               className="btn primary-btn increment-btn"
             >
               <BsPlus />

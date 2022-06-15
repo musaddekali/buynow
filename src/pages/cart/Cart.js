@@ -1,10 +1,55 @@
-import { Link } from 'react-router-dom';
-import { useGlobalContext } from '../../context/context';
+import { Link } from "react-router-dom";
+import { doc, updateDoc, deleteDoc } from "firebase/firestore";
+import { db } from "../../context/firebase";
+import { useGlobalContext } from "../../context/context";
 import "./cart.css";
-import CartItem from './CartItem';
+import CartItem from "./CartItem";
 
 const Cart = () => {
   const { cart, totalQuantity, totalMoney } = useGlobalContext();
+
+  // Remove Item
+  const handleItemRemove = async (itemId) => {
+    try {
+      const docRef = doc(db, "cart", `${itemId}`);
+      await deleteDoc(docRef);
+      console.log("Item deleted id->", itemId);
+    } catch (e) {
+      console.log("Remove item error -> ", e);
+    }
+  };
+
+  // Quantity Increment
+  const increment = async (itemId) => {
+    try {
+      const cartExistItem = cart.find((item) => item.id === itemId);
+      const docRef = doc(db, "cart", `${itemId}`);
+      const data = {
+        ...cartExistItem,
+        quantity: cartExistItem.quantity + 1,
+      };
+      await updateDoc(docRef, data);
+      console.log("Increment");
+    } catch (e) {
+      console.log("Product Increment Error -> ", e);
+    }
+  };
+
+  // Quantity Decrement
+  const decrement = async (itemId) => {
+   try {
+    const docRef = doc(db, "cart", `${itemId}`);
+    const cartExistItem = cart.find((item) => item.id === itemId);
+    const data = {
+      ...cartExistItem,
+      quantity: cartExistItem.quantity - 1,
+    };
+    cartExistItem.quantity >= 2 && (await updateDoc(docRef, data));
+    console.log("Decrement");
+   } catch (e) {
+      console.log('Product Decrement Error ->', e)
+   }
+  };
 
   return (
     <section className="cart">
@@ -15,11 +60,15 @@ const Cart = () => {
         <div className="row">
           <div className="col-lg-8">
             <div className="cart-items">
-              {
-                cart.map(c => (
-                  <CartItem key={c.id} {...c} />
-                ))
-              }
+              {cart.map((c) => (
+                <CartItem
+                  key={c.id}
+                  {...c}
+                  handleItemRemove={handleItemRemove}
+                  increment={increment}
+                  decrement={decrement}
+                />
+              ))}
             </div>
           </div>
           <div className="col-lg-4">
