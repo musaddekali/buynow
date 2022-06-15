@@ -38,6 +38,11 @@ const Home = () => {
     }
   };
 
+  // Add Wishlist
+  const handleAddToWishlist = () => {
+    console.log('Added to wishlist');
+  }
+
   return (
     <section className="products">
       <div className="container">
@@ -51,6 +56,7 @@ const Home = () => {
                 key={pro.id}
                 product={pro}
                 handleAddToCart={handleAddToCart}
+                handleAddToWishlist={handleAddToWishlist}
               />
             ))
           }

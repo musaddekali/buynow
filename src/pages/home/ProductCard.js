@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
 import { BsHeart } from "react-icons/bs";
 
-const ProductCard = ({ product, handleAddToCart }) => {
+const ProductCard = ({
+  product,
+  handleAddToCart,
+  handleAddToWishlist
+}) => {
   const { id, title, images, price } = product;
 
   return (
@@ -22,7 +26,11 @@ const ProductCard = ({ product, handleAddToCart }) => {
           <h4 className="card-price secondary-clr">
             $<span>{price}</span>
           </h4>
-          <button title="Add to Wishlist" className="btn card-wishlist">
+          <button
+            onClick={() => handleAddToWishlist(id)}
+            title="Add to Wishlist"
+            className="btn card-wishlist"
+          >
             <BsHeart />
           </button>
           <button
