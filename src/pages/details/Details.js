@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import { BsDash, BsPlus } from 'react-icons/bs';
 import { useParams } from 'react-router-dom';
-import { doc, getDoc, setDoc, Timestamp, updateDoc } from 'firebase/firestore';
-import { db } from '../../context/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { db } from '../../context/firebase-config';
 import "react-responsive-carousel/lib/styles/carousel.min.css";
 import './details.css';
 import { Carousel } from 'react-responsive-carousel';
@@ -11,7 +11,7 @@ import { useGlobalContext } from '../../context/context';
 const Details = () => {
   const [product, setProduct] = useState();
   const [qnt, setQnt] = useState(1);
-  const { cart } = useGlobalContext();
+  const { handleAddToCart } = useGlobalContext();
   const { productId } = useParams();
 
   const qntPlus = () => {
@@ -22,41 +22,11 @@ const Details = () => {
     qnt >= 2 && setQnt(q => q - 1);
   }
 
-  const handleAddToCart = async () => {
-    try {
-      const { id, title, images, price } = product;
-      const cartExistItem = cart.find(item => item.id === id);
-      const ref = doc(db, 'cart', `${id}`);
-
-      if (cartExistItem) {
-        const data = {
-          ...cartExistItem,
-          quantity: cartExistItem.quantity + qnt
-        }
-        await updateDoc(ref, data);
-        console.log('Updated item');
-        return;
-      }
-
-      const data = {
-        id,
-        title,
-        image: images[0],
-        price,
-        quantity: qnt,
-        createdAt: Timestamp.fromDate(new Date()),
-      }
-      await setDoc(ref, data);
-      console.log("New Item Added");
-    } catch (e) {
-      console.log('Add to cart item Error -> ', e);
-    }
-  }
-
+  // Get Signle Product for details view 
   useEffect(() => {
     const getSingleProduct = async () => {
       try {
-        const ref = doc(db, 'products', productId);
+        const ref = doc(db, 'products', `${productId}`);
         const item = await getDoc(ref);
         setProduct(item.data());
       } catch (e) {
@@ -64,7 +34,7 @@ const Details = () => {
       }
     }
     getSingleProduct();
-  }, [])
+  }, [productId])
 
   if (!product) {
     return (
@@ -131,7 +101,7 @@ const Details = () => {
               <div className="pd-action-btns">
                 <button className="btn primary-btn">Buy Now</button>
                 <button
-                  onClick={handleAddToCart}
+                  onClick={() => handleAddToCart('cart', product.id, qnt)}
                   className="btn accent-btn"
                 >
                   Add to Cart

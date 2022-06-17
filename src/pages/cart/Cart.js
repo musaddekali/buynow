@@ -1,24 +1,12 @@
 import { Link } from "react-router-dom";
-import { doc, updateDoc, deleteDoc } from "firebase/firestore";
-import { db } from "../../context/firebase";
+import { doc, updateDoc } from "firebase/firestore";
+import { db } from "../../context/firebase-config";
 import { useGlobalContext } from "../../context/context";
 import "./cart.css";
 import CartItem from "./CartItem";
 
 const Cart = () => {
-  const { cart, totalQuantity, totalMoney } = useGlobalContext();
-
-  // Remove Item
-  const handleItemRemove = async (itemId) => {
-    if (window.confirm('Do you want to Delete this item?')) {
-      try {
-        const docRef = doc(db, "cart", `${itemId}`);
-        await deleteDoc(docRef);
-      } catch (e) {
-        console.log("Remove item error -> ", e);
-      }
-    }
-  };
+  const { cart, totalQuantity, totalMoney, handleDelete } = useGlobalContext();
 
   // Quantity Increment
   const increment = async (itemId) => {
@@ -63,7 +51,7 @@ const Cart = () => {
                 <CartItem
                   key={c.id}
                   {...c}
-                  handleItemRemove={handleItemRemove}
+                  handleDelete={handleDelete}
                   increment={increment}
                   decrement={decrement}
                 />

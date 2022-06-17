@@ -1,6 +1,21 @@
-import React, { useEffect, useState, useContext } from 'react';
-import { collection, getDocs, onSnapshot, orderBy, query } from 'firebase/firestore';
-import { db } from './firebase';
+import React, {
+    useEffect,
+    useState,
+    useContext
+} from 'react';
+import {
+    collection,
+    deleteDoc,
+    doc,
+    getDocs,
+    onSnapshot,
+    orderBy,
+    query,
+    setDoc,
+    Timestamp,
+    updateDoc
+} from 'firebase/firestore';
+import { db } from './firebase-config';
 
 const AppContext = React.createContext();
 
@@ -9,6 +24,52 @@ export const AppContextProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [totalMoney, setTotalMoney] = useState(0);
     const [totalQuantity, setTotalQuantity] = useState(0);
+
+
+    // Handle Add To Cart (If there item is available then update it otherwise add)
+    const handleAddToCart = async (path, itemId, qnt = 1) => {
+        try {
+            const ref = doc(db, path, `${itemId}`);
+            const cartExistItem = cart.find((item) => item.id === itemId);
+            if (cartExistItem) {
+                // update 
+                await updateDoc(ref, {
+                    ...cartExistItem,
+                    quantity: cartExistItem.quantity + qnt,
+                });
+                return;
+            }
+            // add 
+            const newItem = products.find(item => item.id === itemId);
+            const { id, title, images, price } = newItem;
+            if (newItem) {
+                await setDoc(ref, {
+                    id,
+                    title,
+                    image: images[0],
+                    price,
+                    quantity: qnt,
+                    createdAt: Timestamp.fromDate(new Date()),
+                });
+            }
+        } catch (e) {
+            console.log("Add To Cart Error -> ", e);
+        }
+    }
+
+
+    // Delete Item handler
+    const handleDelete = async (path, id, message) => {
+        if (window.confirm(message)) {
+            try {
+                const ref = doc(db, path, `${id}`);
+                await deleteDoc(ref);
+            } catch (e) {
+                console.log(path, 'Delete error -> ', e);
+            }
+        }
+    }
+
 
     // Get Total Ammount 
     useEffect(() => {
@@ -25,6 +86,7 @@ export const AppContextProvider = ({ children }) => {
         }
         getTotal();
     }, [cart]);
+
 
     // Get App Products 
     useEffect(() => {
@@ -46,17 +108,17 @@ export const AppContextProvider = ({ children }) => {
         getProducts();
     }, [])
 
+
     // Get Cart Realtile Update
     useEffect(() => {
         const unsubscribe = onSnapshot(
-            collection(db, "cart"),
+            query(collection(db, "cart"), orderBy('createdAt', 'desc')),
             (snapshot) => {
                 let cart = [];
                 snapshot.forEach(item => {
                     cart.push(item.data());
                 })
                 setCart(cart);
-                console.log('Cart Realtime Data', cart);
             },
             (error) => {
                 console.log("Cart Realtime Data Error -> ", error);
@@ -64,12 +126,15 @@ export const AppContextProvider = ({ children }) => {
         return () => unsubscribe();
     }, []);
 
+
     return (
         <AppContext.Provider value={{
             products,
             cart,
             totalMoney,
-            totalQuantity
+            totalQuantity,
+            handleAddToCart,
+            handleDelete
         }}>
             {children}
         </AppContext.Provider>

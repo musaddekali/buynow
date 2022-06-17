@@ -1,26 +1,33 @@
 import { Link } from "react-router-dom";
 import { BsTrash, BsCart } from "react-icons/bs";
-import Img from "../../assets/images/coffeeCup.jpg";
 
-const WishlistItem = () => {
+const WishlistItem = ({ wishlist, handleAddToCart, handleDelete }) => {
+  const { id, title, price, image, createdAt } = wishlist;
+
   return (
     <div className="card-hr wishlist-item">
       <div className="card-hr-hd">
         <img
-          src={Img}
+          src={image}
           width="80"
           height="80"
-          alt="wishlistItem"
+          alt={title}
           className="card-hr-img"
         />
-        <Link to="/details" className="card-hr-title">
-          Coffee powder best quality Ispahani-3434.
-        </Link>
+        <div>
+          <Link to={`/details/${id}`} className="card-hr-title">
+            {title}
+          </Link>
+          <time dateTime={createdAt.toDate().toLocaleDateString()}>
+            {createdAt.toDate().toDateString()}
+          </time>
+        </div>
       </div>
       <div className="card-hr-bd">
         <div className="card-hr-price">
-          <span className="price">$505</span>
+          <span className="price">${price}</span>
           <button
+            onClick={() => handleDelete('wishlist', id, 'Your Product Will be Removed from wishlist. Are you sure?')}
             className="btn primary-btn wishlist-item-remove"
             title="Remove from Wishlist"
           >
@@ -28,6 +35,7 @@ const WishlistItem = () => {
           </button>
         </div>
         <button
+          onClick={() => handleAddToCart('cart', id)}
           className="btn primary-btn wishlist-item-cart align-self-center ms-md-auto"
           title="Add to Cart"
         >
