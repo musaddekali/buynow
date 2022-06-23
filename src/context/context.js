@@ -18,6 +18,7 @@ import {
 import { db } from './firebase-config';
 
 const AppContext = React.createContext();
+AppContext.displayName ='AppGlobalContext';
 
 export const AppContextProvider = ({ children }) => {
     const [products, setProducts] = useState([]);

@@ -113,7 +113,7 @@ const NavMenu = () => {
             <NavmenuUserLink />
             <Link className="cart nav-a nav-menu-height" to="/cart">
               <div className="cart-badge-wrap">
-                <span className="count">{totalQuantity}</span>
+                {totalQuantity ? <span className="count">{totalQuantity}</span> : ''}
                 <span className="nav-cart-icon">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"

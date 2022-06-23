@@ -1,286 +1,292 @@
 :root {
-    --primary: #d92e35;
-    --secondary: #ad1a5e;
-    --accent: linear-gradient(90deg, var(--secondary) 11%, var(--primary) 86%);
-  
-    --primary-rgb: 217, 46, 53;
-    --secondary-rgb: 173, 26, 94;
-  
-    --red: hsl(354, 70%, 54%);
-    --green: hsl(152, 69%, 31%);
-    --blue: hsl(211, 100%, 50%);
-    --orange: hsl(27, 98%, 54%);
-    --yellow: hsl(45, 100%, 51%);
-    --cyan: hsl(190, 90%, 50%);
-  
-    --gray-100: hsl(210, 17%, 98%);
-    --gray-200: hsl(210, 16%, 93%);
-    --gray-300: hsl(210, 14%, 89%);
-    --gray-400: hsl(210, 14%, 83%);
-    --gray-500: hsl(210, 11%, 71%);
-    --gray-600: hsl(208, 7%, 46%);
-    --gray-700: hsl(210, 9%, 31%);
-    --gray-800: hsl(210, 10%, 23%);
-    --gray-900: hsl(210, 11%, 15%);
-  
-    --black: var(--gray-900);
-    --white: #ffffff;
-  
-    --text-color: var(--black);
-    --body-bg: var(--white);
-    --link-color: var(--blue);
-    --shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
-      rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
-    --shadow-sm: 1px 1px 5px 0 rgb(0 0 0 / 20%);
-  }
-  
-  /* ------- 
+  --primary: #d92e35;
+  --secondary: #ad1a5e;
+  --accent: linear-gradient(90deg, var(--secondary) 11%, var(--primary) 86%);
+
+  --primary-rgb: 217, 46, 53;
+  --secondary-rgb: 173, 26, 94;
+
+  --red: hsl(354, 70%, 54%);
+  --green: hsl(152, 69%, 31%);
+  --blue: hsl(211, 100%, 50%);
+  --orange: hsl(27, 98%, 54%);
+  --yellow: hsl(45, 100%, 51%);
+  --cyan: hsl(190, 90%, 50%);
+
+  --gray-100: hsl(210, 17%, 98%);
+  --gray-200: hsl(210, 16%, 93%);
+  --gray-300: hsl(210, 14%, 89%);
+  --gray-400: hsl(210, 14%, 83%);
+  --gray-500: hsl(210, 11%, 71%);
+  --gray-600: hsl(208, 7%, 46%);
+  --gray-700: hsl(210, 9%, 31%);
+  --gray-800: hsl(210, 10%, 23%);
+  --gray-900: hsl(210, 11%, 15%);
+
+  --black: var(--gray-900);
+  --white: #ffffff;
+
+  --text-color: var(--black);
+  --body-bg: var(--white);
+  --link-color: var(--blue);
+  --shadow: rgba(50, 50, 93, 0.25) 0px 13px 27px -5px,
+    rgba(0, 0, 0, 0.3) 0px 8px 16px -8px;
+  --shadow-sm: 1px 1px 5px 0 rgb(0 0 0 / 20%);
+}
+
+/* ------- 
   Global Styles
   ------- */
-  *,
-  *::before,
-  *::after {
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: sans-serif, Arial, Helvetica, Arial, serif;
-    font-size: 1rem;
-    font-weight: 400;
-    line-height: 1.5;
-    color: var(--text-color);
-    background-color: var(--body-bg);
-  }
-  
-  /* Scrollbar  */
-  ::-webkit-scrollbar {
-    width: 8px;
-  }
-  
-  ::-webkit-scrollbar-track {
-    background: var(--gray-400);
-  }
-  
-  ::-webkit-scrollbar-thumb {
-    background: var(--primary);
-    border-radius: 50px;
-  }
-  
-  ::-webkit-scrollbar-thumb:hover {
-    background: var(--secondary);
-  }
-  /* End Scrollbar */
-  
-  a {
-    text-decoration: none;
-    display: block;
-    transition: 0.3s ease;
-    cursor: pointer;
-    background: transparent;
-  }
-  
-  ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .main {
-    margin-top: 80px;
-  }
-  
-  section {
-    padding-top: 40px;
-    padding-bottom: 40px;
-    overflow: hidden;
-  }
-  
-  .section-title {
-    margin-bottom: 30px;
-  }
-  
-  .section-title h3 {
-    font-size: 32px;
-    font-weight: 700;
-    margin: 0;
-    display: inline-block;
-    position: relative;
-    color: var(--primary);
-  }
-  
-  .section-title h3:after {
-    content: "";
-    width: 100%;
-    height: 2px;
-    background: var(--accent);
-    display: block;
-    position: absolute;
-    left: 0;
-    right: 0;
-    bottom: -3px;
-  }
-  
-  /* Color Class */
-  /* Background Color  */
-  .primary-bg {
-    background-color: var(--primary) !important;
-  }
-  
-  .secondary-bg {
-    background-color: var(--secondary) !important;
-  }
-  
-  .accent-bg {
-    background: var(--accent) !important;
-  }
-  
-  .white-bg {
-    background-color: #fff !important;
-  }
-  
-  /* Forground Color  */
-  .primary-clr {
-    color: var(--primary) !important;
-  }
-  
-  .secondary-clr {
-    color: var(--secondary) !important;
-  }
-  
-  .accent-clr {
-    color: var(--accent) !important;
-  }
-  
-  .white-clr {
-    color: #fff !important;
-  }
-  
-  /* Buttons */
-  .btn {
-    display: inline-block;
-    font-size: 1rem;
-    font-weight: 400;
-    padding: 0.5em 1em;
-    line-height: 1.2;
-    cursor: pointer;
-    border: 1px solid transparent;
-    outline: none;
-    border-radius: 0.25rem;
-    text-decoration: none;
-    user-select: none;
-    background-color: transparent;
-    transition: all 0.3s;
-  }
-  
-  .btn-block {
-    width: 100% !important;
-  }
-  
-  .btn:hover,
-  .btn:focus {
-    box-shadow: var(--shadow);
-  }
-  
-  .btn:focus {
-    transform: scale(0.98);
-  }
-  
-  /* Primary Btn  */
-  .primary-btn {
-    color: #fff;
-    background-color: rgba(var(--primary-rgb), 0.85);
-    border-color: rgba(var(--primary-rgb), 0.85);
-  }
-  
-  .primary-btn:hover,
-  .primary-btn:focus {
-    color: #fff;
-    background-color: var(--primary);
-    border-color: var(--primary);
-  }
-  /* Secondary Btn  */
-  .secondary-btn {
-    color: #fff;
-    background-color: rgba(var(--secondary-rgb), 0.85);
-    border-color: rgba(var(--secondary-rgb), 0.85);
-  }
-  
-  .secondary-btn:hover,
-  .secondary-btn:focus {
-    color: #fff;
-    background-color: var(--secondary);
-    border-color: var(--secondary);
-  }
-  /* Accent Btn  */
-  .accent-btn {
-    color: #fff;
-    background: var(--accent);
-    border-color: var(--primary);
-  }
-  
-  .accent-btn:hover,
-  .accent-btn:focus {
-    color: #fff;
-    background: linear-gradient(90deg, var(--primary) 11%, var(--secondary) 86%);
-    border-color: var(--primary);
-  }
-  
-  /* Card Horizontal  */
-  .card-hr-hd,
-  .card-hr-bd {
-    display: flex;
-  }
-  
-  .card-hr-bd {
-    justify-content: center;
-  }
-  
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  font-family: sans-serif, Arial, Helvetica, Arial, serif;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.5;
+  color: var(--text-color);
+  background-color: var(--body-bg);
+}
+
+/* Scrollbar  */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--gray-400);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--primary);
+  border-radius: 50px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--secondary);
+}
+/* End Scrollbar */
+
+a {
+  text-decoration: none;
+  display: block;
+  transition: 0.3s ease;
+  cursor: pointer;
+  background: transparent;
+}
+
+ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.main {
+  margin-top: 80px;
+}
+
+section {
+  padding-top: 40px;
+  padding-bottom: 40px;
+  overflow: hidden;
+}
+
+.section-title {
+  margin-bottom: 30px;
+}
+
+.section-title h3 {
+  font-size: 32px;
+  font-weight: 700;
+  margin: 0;
+  display: inline-block;
+  position: relative;
+  color: var(--primary);
+}
+
+.section-title h3:after {
+  content: "";
+  width: 100%;
+  height: 2px;
+  background: var(--accent);
+  display: block;
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -3px;
+}
+
+/* Color Class */
+/* Background Color  */
+.primary-bg {
+  background-color: var(--primary) !important;
+}
+
+.secondary-bg {
+  background-color: var(--secondary) !important;
+}
+
+.accent-bg {
+  background: var(--accent) !important;
+}
+
+.white-bg {
+  background-color: #fff !important;
+}
+
+/* Forground Color  */
+.primary-clr {
+  color: var(--primary) !important;
+}
+
+.secondary-clr {
+  color: var(--secondary) !important;
+}
+
+.accent-clr {
+  color: var(--accent) !important;
+}
+
+.white-clr {
+  color: #fff !important;
+}
+
+/* Buttons */
+.btn {
+  display: inline-block;
+  font-size: 1rem;
+  font-weight: 400;
+  padding: 0.5em 1em;
+  line-height: 1.2;
+  cursor: pointer;
+  border: 1px solid transparent;
+  outline: none;
+  border-radius: 0.25rem;
+  text-decoration: none;
+  user-select: none;
+  background-color: transparent;
+  transition: all 0.3s;
+}
+
+.btn-block {
+  width: 100% !important;
+}
+
+.btn:hover,
+.btn:focus {
+  box-shadow: var(--shadow);
+}
+
+.btn:focus {
+  transform: scale(0.98);
+}
+
+/* Primary Btn  */
+.primary-btn {
+  color: #fff;
+  background-color: rgba(var(--primary-rgb), 0.85);
+  border-color: rgba(var(--primary-rgb), 0.85);
+}
+
+.primary-btn:hover,
+.primary-btn:focus {
+  color: #fff;
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+/* Secondary Btn  */
+.secondary-btn {
+  color: #fff;
+  background-color: rgba(var(--secondary-rgb), 0.85);
+  border-color: rgba(var(--secondary-rgb), 0.85);
+}
+
+.secondary-btn:hover,
+.secondary-btn:focus {
+  color: #fff;
+  background-color: var(--secondary);
+  border-color: var(--secondary);
+}
+/* Accent Btn  */
+.accent-btn {
+  color: #fff;
+  background: var(--accent);
+  border-color: var(--primary);
+}
+
+.accent-btn:hover,
+.accent-btn:focus {
+  color: #fff;
+  background: linear-gradient(90deg, var(--primary) 11%, var(--secondary) 86%);
+  border-color: var(--primary);
+}
+
+.btn:disabled, button:disabled {
+  background: var(--gray-400);
+  color: #444;
+  box-shadow: none;
+  pointer-events: none;
+}
+
+/* Card Horizontal  */
+.card-hr-hd,
+.card-hr-bd {
+  display: flex;
+}
+
+.card-hr-bd {
+  justify-content: center;
+}
+
+.card-hr {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  padding: 1rem;
+  box-shadow: 1px 1px 5px 0 rgb(0 0 0/20%);
+  margin-bottom: 1rem;
+}
+
+.card-hr-img {
+  margin-right: 0.5rem;
+  width: 80px;
+  height: 80px;
+  object-fit: cover;
+}
+
+.card-hr-title {
+  font-size: 14px;
+  font-weight: 400;
+  margin-bottom: 0.5rem;
+  word-break: break-word;
+  color: var(--primary);
+}
+
+.card-hr-price {
+  padding: 0 1rem;
+  margin-right: 1rem;
+  text-align: center;
+  display: grid;
+}
+
+.card-hr-price .price {
+  font-size: 18px;
+  font-weight: 400;
+  color: var(--secondary);
+  margin-bottom: 0.5rem;
+}
+
+.card-hr .quantity-count-wrap {
+  margin-bottom: 0;
+  align-items: flex-start;
+}
+
+@media (max-width: 767px) {
   .card-hr {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-    padding: 1rem;
-    box-shadow: 1px 1px 5px 0 rgb(0 0 0/20%);
-    margin-bottom: 1rem;
+    grid-template-columns: 1fr;
   }
-  
-  .card-hr-img {
-    margin-right: 0.5rem;
-    width: 80px;
-    height: 80px;
-    object-fit: cover;
-  }
-  
-  .card-hr-title {
-    font-size: 14px;
-    font-weight: 400;
-    margin-bottom: 0.5rem;
-    word-break: break-word;
-    color: var(--primary);
-  }
-  
-  .card-hr-price {
-    padding: 0 1rem;
-    margin-right: 1rem;
-    text-align: center;
-    display: grid;
-  }
-  
-  .card-hr-price .price {
-    font-size: 18px;
-    font-weight: 400;
-    color: var(--secondary);
-    margin-bottom: 0.5rem;
-  }
-  
-  .card-hr .quantity-count-wrap {
-    margin-bottom: 0;
-    align-items: flex-start;
-  }
-  
-  @media (max-width: 767px) {
-    .card-hr {
-      grid-template-columns: 1fr;
-    }
-  }
-  
+}

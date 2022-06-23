@@ -25,7 +25,7 @@ function App() {
         <Route index element={<Home />} />
         <Route path="details/:productId" element={<Details />} />
         <Route path="cart" element={<Cart />} />
-        <Route path="payment" element={<Payment />} />
+        <Route path="payment/userId" element={<Payment />} />
         <Route path="profile" element={<Profile />} />
         <Route path="update-profile" element={<UpdateProfile />} />
         <Route path="orders" element={<Orders />} />

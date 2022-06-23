@@ -1,5 +1,5 @@
-import { Link } from "react-router-dom";
-import { doc, updateDoc } from "firebase/firestore";
+import { Link, useNavigate } from "react-router-dom";
+import { deleteDoc, doc, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "../../context/firebase-config";
 import { useGlobalContext } from "../../context/context";
 import "./cart.css";
@@ -7,8 +7,42 @@ import CartItem from "./CartItem";
 
 const Cart = () => {
   const { cart, totalQuantity, totalMoney, handleDelete } = useGlobalContext();
+  const navigate = useNavigate();
 
-  // Quantity Increment
+  //// Handle Orders
+  const handleOrders = async () => {
+    if (!cart.length) {
+      return;
+    }
+    const cartAcRef = doc(db, 'cartAccounts', 'userId_1', 'cartAccount', 'useruid');
+    try {
+      await setDoc(cartAcRef, {
+        totalMoney: totalMoney,
+        totalQuantity: totalQuantity
+      })
+      console.log('cart account total added');
+    } catch (e) {
+      console.log('Cart Account added Problems -> ', e);
+    }
+
+    cart.forEach(async (item) => {
+      try {
+        const orderRef = doc(db, 'orders', 'userId_1', 'userOrders', `${item.id}`);
+        await setDoc(orderRef, {
+          ...item,
+          payState: false,
+          createdAt: Timestamp.fromDate(new Date())
+        })
+        console.log(`${cart.length} item Ordered`);
+        await deleteDoc(doc(db, 'cart', `${item.id}`));
+        console.log('Deleted cart ordered items id');
+      } catch (e) {
+        console.log('Order added Problems -> ', e);
+      }
+    })
+  }
+
+  //// Quantity Increment
   const increment = async (itemId) => {
     try {
       const cartExistItem = cart.find((item) => item.id === itemId);
@@ -23,7 +57,7 @@ const Cart = () => {
     }
   };
 
-  // Quantity Decrement
+  //// Quantity Decrement
   const decrement = async (itemId) => {
     try {
       const docRef = doc(db, "cart", `${itemId}`);
@@ -47,6 +81,12 @@ const Cart = () => {
         <div className="row">
           <div className="col-lg-8">
             <div className="cart-items">
+              {!cart.length && (
+                <div className="container">
+                  <p>There are no items in this cart</p>
+                  <Link className="btn primary-btn" to="/">CONTINUE SHOPPING</Link>
+                </div>
+              )}
               {cart.map((c) => (
                 <CartItem
                   key={c.id}
@@ -83,10 +123,12 @@ const Cart = () => {
                   </div>
                 </div>
               </div>
-              {/* <button className="btn primary-btn btn-block">Proceed to payment</button> */}
-              <Link to="/payment" className="btn primary-btn btn-block">
+              <button
+                onClick={() => { navigate(`/payment/userId`); handleOrders() }}
+                disabled={!cart.length}
+                className="btn primary-btn btn-block">
                 Proceed to payment
-              </Link>
+              </button>
             </div>
           </div>
         </div>

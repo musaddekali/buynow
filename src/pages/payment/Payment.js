@@ -1,6 +1,29 @@
+import { doc, getDoc } from "firebase/firestore";
+import { useCallback, useEffect } from "react";
+import { useState } from "react";
+import { db } from "../../context/firebase-config";
 import "./payment.css";
 
 const Payment = () => {
+  const [cartAc, setCartAc] = useState({ totalMoney: 0, totalQuantity: 0 });
+  const { totalMoney, totalQuantity } = cartAc;
+
+  //// Get Cart Account Data (totol Price and Quantity)
+  const getCartAccount = useCallback(async () => {
+    try {
+      const cartAcRef = doc(db, 'cartAccounts', 'userId_1', 'cartAccount', 'useruid');
+      const snap = await getDoc(cartAcRef);
+      setCartAc(snap.data());
+      console.log('Cart Account Data Getted in payment page');
+    } catch (e) {
+      console.log('Cart Account Getting Problems -> ', e)
+    }
+  }, [setCartAc]);
+
+  useEffect(() => {
+    getCartAccount()
+  }, [getCartAccount])
+
   return (
     <section className="payment">
       <div className="container">
@@ -30,22 +53,22 @@ const Payment = () => {
               <div className="os-items">
                 <div className="os-item">
                   <div className="left">
-                    Subtotal <span>2 item</span>
+                    Subtotal <span>{totalQuantity} item</span>
                   </div>
                   <div className="right">
-                    $ <span>405</span>
+                    $<span>{totalMoney}</span>
                   </div>
                 </div>
                 <div className="os-item">
                   <div className="left">Shipping Fee</div>
                   <div className="right">
-                    $ <span>10</span>
+                    $<span>10</span>
                   </div>
                 </div>
                 <div className="os-item">
                   <div className="left">Total</div>
                   <div className="right">
-                    $ <span>415</span>
+                    $<span>{totalMoney + 10}</span>
                   </div>
                 </div>
               </div>
