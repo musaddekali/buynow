@@ -1,7 +1,5 @@
-import { Link } from 'react-router-dom'
-
 const OrderItem = ({ orderItem }) => {
-    const { id, title, image, price, quantity, createdAt, payState } = orderItem;
+    const { id, title, image, price, quantity, createdAt, paid } = orderItem;
 
     return (
         <div className="card-hr">
@@ -14,9 +12,9 @@ const OrderItem = ({ orderItem }) => {
                     className="card-hr-img"
                 />
                 <div className="d-grid">
-                    <Link to={`/details/${id}`} className="card-hr-title">
+                    <p className="card-hr-title">
                         {title}
-                    </Link>
+                    </p>
                     <span className="order-id">Order Id : #{id}</span>
                     <span className="order-price">
                         ${price} <span className="order-qnt">x {quantity}</span>
@@ -29,15 +27,15 @@ const OrderItem = ({ orderItem }) => {
             <div className="card-hr-bd">
                 <div className="order-btns">
                     {
-                        !payState && (
+                        !paid && (
                             <>
-                                <button className="btn secondary-btn mb-2 me-2">Pending</button>
+                                <i className='mb-2 me-2'>Pending</i>
                                 <button className="btn secondary-btn mb-2 me-2">Pay</button>
                                 <button className="btn secondary-btn mb-2 me-2">Cencle Order</button>
                             </>
                         )
                     }
-                    {payState && <button className="btn secondary-btn mb-2 me-2">Paid</button>}
+                    {paid && <i>Paid</i>}
                 </div>
             </div>
         </div>

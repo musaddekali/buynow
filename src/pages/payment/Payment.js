@@ -1,28 +1,91 @@
-import { doc, getDoc } from "firebase/firestore";
 import { useCallback, useEffect } from "react";
+import { useNavigate } from "react-router";
+import { collection, doc, getDoc, getDocs, Timestamp, updateDoc } from "firebase/firestore";
 import { useState } from "react";
 import { db } from "../../context/firebase-config";
 import "./payment.css";
+import img1 from '../../assets/images/bkash.png';
+import img2 from '../../assets/images/nagad.png';
+import img3 from '../../assets/images/duchBangla.png';
+import img4 from '../../assets/images/payoneer.png';
+import img5 from '../../assets/images/paypal.jpg';
+
+const paymentImages = [img1, img2, img3, img4, img5];
+
+const PaymentItem = ({ handleCurrentOrdersPayment, img }) => {
+  return (
+    <div
+      onClick={handleCurrentOrdersPayment}
+      className="payment-item"
+    >
+      <img
+        src={img}
+        alt="payment"
+        className="payment-item-img"
+      />
+    </div>
+  )
+}
+
+const initialAccount = {
+  totalMoney: 0,
+  totalQuantity: 0
+}
 
 const Payment = () => {
-  const [cartAc, setCartAc] = useState({ totalMoney: 0, totalQuantity: 0 });
-  const { totalMoney, totalQuantity } = cartAc;
+  const [recentPdAccount, setRecentPdAccount] = useState(initialAccount);
+  const { totalMoney, totalQuantity } = recentPdAccount;
+  const navigate = useNavigate();
 
-  //// Get Cart Account Data (totol Price and Quantity)
-  const getCartAccount = useCallback(async () => {
+  //// Handle PAYMENT for current unpaid orders (not all Unpaid orders)
+  const handleCurrentOrdersPayment = async () => {
+    if (!totalMoney) {
+      alert('You have already Paid');
+      return;
+    };
+    if (window.confirm('Are you Agree with Payment')) {
+      setRecentPdAccount(initialAccount);
+      const recPdAcRef = doc(db, 'recentProductAccounts', 'userId_1');
+      await updateDoc(recPdAcRef, initialAccount);
+      const unpaidOrdersRef = collection(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders');
+      const unpaidOrderList = [];
+      const docsSnap = await getDocs(unpaidOrdersRef);
+      docsSnap.forEach((item) => {
+        unpaidOrderList.push(item.data());
+      })
+      unpaidOrderList.map(item => {
+        return handleUnpaidOrdersToPaid(item);
+      });
+      alert('Your Payment Successfull');
+      navigate('/');
+    }
+  }
+
+  //// Handle Recent Unpaid Orders (make ---  paid = true);
+  const handleUnpaidOrdersToPaid = async (orderItem) => {
     try {
-      const cartAcRef = doc(db, 'cartAccounts', 'userId_1', 'cartAccount', 'useruid');
-      const snap = await getDoc(cartAcRef);
-      setCartAc(snap.data());
-      console.log('Cart Account Data Getted in payment page');
+      const mainOrderRef = doc(db, 'orders', 'userId_1', 'userOrders', orderItem.id.toString());
+      await updateDoc(mainOrderRef, { ...orderItem, paid: true, createdAt: Timestamp.fromDate(new Date()) });
+    } catch (e) {
+      console.log('Upadate Main orders error -> ', e.message);
+    }
+  }
+
+
+  //// Get Recent Product Account Data (totol Price and Quantity)
+  const getRecentProductAccount = useCallback(async () => {
+    try {
+      const recPdAcRef = doc(db, 'recentProductAccounts', 'userId_1');
+      const snap = await getDoc(recPdAcRef);
+      setRecentPdAccount(snap.data());
     } catch (e) {
       console.log('Cart Account Getting Problems -> ', e)
     }
-  }, [setCartAc]);
+  }, [setRecentPdAccount]);
 
   useEffect(() => {
-    getCartAccount()
-  }, [getCartAccount])
+    getRecentProductAccount()
+  }, [getRecentProductAccount])
 
   return (
     <section className="payment">
@@ -33,18 +96,15 @@ const Payment = () => {
         <div className="row">
           <div className="col-lg-8 mb-4">
             <div className="payment-items">
-              <div className="payment-item">
-                <span>bKash</span>
-              </div>
-              <div className="payment-item">
-                <span>Nagod</span>
-              </div>
-              <div className="payment-item">
-                <span>Duch Bangla</span>
-              </div>
-              <div className="payment-item">
-                <span>Master Card</span>
-              </div>
+              {
+                paymentImages.map((img, i) => (
+                  <PaymentItem
+                    key={i}
+                    img={img}
+                    handleCurrentOrdersPayment={handleCurrentOrdersPayment}
+                  />
+                ))
+              }
             </div>
           </div>
           <div className="col-lg-4">

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { deleteDoc, doc, setDoc, Timestamp, updateDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "../../context/firebase-config";
 import { useGlobalContext } from "../../context/context";
 import "./cart.css";
@@ -14,33 +14,59 @@ const Cart = () => {
     if (!cart.length) {
       return;
     }
-    const cartAcRef = doc(db, 'cartAccounts', 'userId_1', 'cartAccount', 'useruid');
+    // Recent Product Account for total Price and Quantity
+    const curPdAcRef = doc(db, 'recentProductAccounts', 'userId_1');
     try {
-      await setDoc(cartAcRef, {
+      await setDoc(curPdAcRef, {
         totalMoney: totalMoney,
         totalQuantity: totalQuantity
       })
-      console.log('cart account total added');
     } catch (e) {
       console.log('Cart Account added Problems -> ', e);
     }
 
+    // Called DeletePastOrders function
+    deletePastOrders();
+
     cart.forEach(async (item) => {
       try {
-        const orderRef = doc(db, 'orders', 'userId_1', 'userOrders', `${item.id}`);
-        await setDoc(orderRef, {
+        // Order Ref (Main Order)
+        // const orderId = Date.now().toString();
+        const orderRef = doc(db, 'orders', 'userId_1', 'userOrders', item.id.toString());
+        // Recent Unpaid Orders (Temporarely contains current orders)
+        const curUnpOrdRef = doc(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders',  item.id.toString());
+        const data = {
           ...item,
-          payState: false,
+          // id: orderId,
+          paid: false,
           createdAt: Timestamp.fromDate(new Date())
-        })
-        console.log(`${cart.length} item Ordered`);
+        }
+        // add new order
+        await setDoc(orderRef, data);
+        // add new recent order
+        await setDoc(curUnpOrdRef, data);
+        console.log(`${totalQuantity} item Ordered`);
+        // delete ordered Cart items
         await deleteDoc(doc(db, 'cart', `${item.id}`));
-        console.log('Deleted cart ordered items id');
       } catch (e) {
         console.log('Order added Problems -> ', e);
       }
     })
   }
+
+  // Delete Recent Unpaid orders
+  const deletePastOrders = async () => {
+    try {
+      const pastOrdersRef = collection(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders');
+      const pastDataSnap = await getDocs(pastOrdersRef);
+      pastDataSnap.forEach(async item => {
+        await deleteDoc(doc(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders', `${item.data().id}`));
+      });
+    } catch (e) {
+      console.log('Past order data get problems-> ', e);
+    }
+  }
+
 
   //// Quantity Increment
   const increment = async (itemId) => {
