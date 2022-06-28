@@ -31,10 +31,9 @@ const Cart = () => {
     cart.forEach(async (item) => {
       try {
         // Order Ref (Main Order)
-        // const orderId = Date.now().toString();
         const orderRef = doc(db, 'orders', 'userId_1', 'userOrders', item.id.toString());
         // Recent Unpaid Orders (Temporarely contains current orders)
-        const curUnpOrdRef = doc(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders',  item.id.toString());
+        const recentUnpOrdRef = doc(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders', item.id.toString());
         const data = {
           ...item,
           // id: orderId,
@@ -44,14 +43,37 @@ const Cart = () => {
         // add new order
         await setDoc(orderRef, data);
         // add new recent order
-        await setDoc(curUnpOrdRef, data);
-        console.log(`${totalQuantity} item Ordered`);
+        await setDoc(recentUnpOrdRef, data);
         // delete ordered Cart items
         await deleteDoc(doc(db, 'cart', `${item.id}`));
       } catch (e) {
         console.log('Order added Problems -> ', e);
       }
     })
+  }
+
+  /// Clear All Orders
+  function clearOrderHistory() {
+    if (window.confirm('Do you want to clear all Cart items?')) {
+      const orderRef = collection(db, 'cart');
+      deleteCollection(orderRef);
+    }
+  }
+
+  async function deleteCollection(collectionRef) {
+    try {
+      const colSnap = await getDocs(collectionRef);
+      let docId = [];
+      colSnap.forEach(item => {
+        docId.push(item.data().id);
+      })
+      docId.forEach(async id => {
+        await deleteDoc(doc(collectionRef, id.toString()));
+      })
+      console.log('carts deleted success');
+    } catch (e) {
+      console.log("cart Collection delete Problems -> ", e)
+    }
   }
 
   // Delete Recent Unpaid orders
@@ -66,7 +88,6 @@ const Cart = () => {
       console.log('Past order data get problems-> ', e);
     }
   }
-
 
   //// Quantity Increment
   const increment = async (itemId) => {
@@ -104,13 +125,23 @@ const Cart = () => {
         <div className="section-title">
           <h3>Your cart has {totalQuantity} item.</h3>
         </div>
+        {cart.length > 2 && (
+          <div className="clear-history mb-3">
+            <button
+              onClick={clearOrderHistory}
+              className="btn primary-btn"
+            >
+              Clear All Cart
+            </button>
+          </div>
+        )}
         <div className="row">
           <div className="col-lg-8">
             <div className="cart-items">
               {!cart.length && (
                 <div className="container">
                   <p>There are no items in this cart</p>
-                  <Link className="btn primary-btn" to="/">CONTINUE SHOPPING</Link>
+                  <Link className="btn primary-btn mb-3" to="/">CONTINUE SHOPPING</Link>
                 </div>
               )}
               {cart.map((c) => (

@@ -1,11 +1,46 @@
-import { collection, deleteDoc, doc, getDocs, orderBy, query } from 'firebase/firestore';
+import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, setDoc } from 'firebase/firestore';
 import { useCallback, useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { db } from '../../context/firebase-config';
 import OrderItem from './OrderItem';
 import './orders.css';
 
 const Orders = () => {
   const [orderItems, setOrderItems] = useState([]);
+  const navigate = useNavigate();
+
+  /// handle Payment from Order page for spacific item
+  const handlePaymentFromOrderList = async (itemId) => {
+    deletePastOrders();
+    try {
+      const orderRef = doc(db, 'orders', 'userId_1', 'userOrders', itemId.toString());
+      const curUnpOrdRef = doc(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders', `${itemId}`)
+      const curPrdAcRef = doc(db, 'recentProductAccounts', 'userId_1');
+      const orderItem = await getDoc(orderRef);
+      await setDoc(curUnpOrdRef, orderItem.data());
+      const { price, quantity } = orderItem.data();
+      await setDoc(curPrdAcRef, {
+        totalMoney: price * quantity,
+        totalQuantity: quantity
+      });
+      navigate(`/payment/userId`);
+    } catch (e) {
+      console.log('handlePaymentFromOrderList Problem -> ', e)
+    }
+  }
+
+  // Delete Recent Unpaid orders
+  const deletePastOrders = async () => {
+    try {
+      const pastOrdersRef = collection(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders');
+      const pastDataSnap = await getDocs(pastOrdersRef);
+      pastDataSnap.forEach(async item => {
+        await deleteDoc(doc(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders', `${item.data().id}`));
+      });
+    } catch (e) {
+      console.log('Past order data get problems-> ', e);
+    }
+  }
 
   const getOrderItems = useCallback(async () => {
     try {
@@ -21,28 +56,42 @@ const Orders = () => {
     }
   }, []);
 
+  /// Clear All Orders
   function clearOrderHistory() {
     if (window.confirm('Do you want to clear all orders?')) {
       const orderRef = collection(db, 'orders', 'userId_1', 'userOrders');
       deleteCollection(orderRef);
-      console.log('Order History Cleared')
     }
   }
 
   async function deleteCollection(collectionRef) {
-    const colSnap = await getDocs(collectionRef);
-    let docId = [];
-    colSnap.forEach(item => {
-      docId.push(item.data().id);
-    })
-    docId.forEach(id => {
-      deleteDoc(doc(collectionRef, id.toString())).then(() => {
-        console.log('Collection deleted success');
-      });
-      setOrderItems([]);
-    })
+    try {
+      const colSnap = await getDocs(collectionRef);
+      let docId = [];
+      colSnap.forEach(item => {
+        docId.push(item.data().id);
+      })
+      docId.forEach(async id => {
+        await deleteDoc(doc(collectionRef, id.toString()));
+        setOrderItems([]);
+      })
+    } catch (e) {
+      console.log("Orders Collection delete Problems -> ", e)
+    }
+  }
 
-    console.log('deleteCollection function output -> ', collectionRef, docId);
+  //// Cancel Single Order
+  async function handleCancelOrder(itemId) {
+    if (window.confirm('Do you Wnat to cancle your Order ?')) {
+      try {
+        const docRef = doc(db, 'orders', 'userId_1', 'userOrders', itemId.toString());
+        await deleteDoc(docRef);
+        setOrderItems(prevS => prevS.filter(order => order.id !== itemId));
+        console.log('Single Doc has Deleted! ID -> ', docRef.id);
+      } catch (e) {
+        console.log('Cancel Order Problems -> ', e);
+      }
+    }
   }
 
   useEffect(() => {
@@ -64,14 +113,16 @@ const Orders = () => {
           <h3>My Orders</h3>
         </div>
 
-        <div className="clear-history mb-3">
-          <button
-            onClick={clearOrderHistory}
-            className="btn primary-btn"
-          >
-            Clear Order History
-          </button>
-        </div>
+        {orderItems.length > 2 && (
+          <div className="clear-history mb-3">
+            <button
+              onClick={clearOrderHistory}
+              className="btn primary-btn"
+            >
+              Clear Order History
+            </button>
+          </div>
+        )}
 
         <div className="order-nav">
           <ul className="order-nav-list">
@@ -87,6 +138,8 @@ const Orders = () => {
               <OrderItem
                 key={item.id}
                 orderItem={item}
+                handlePaymentFromOrderList={handlePaymentFromOrderList}
+                handleCancelOrder={handleCancelOrder}
               />
             ))
           }

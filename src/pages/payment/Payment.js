@@ -27,13 +27,13 @@ const PaymentItem = ({ handleCurrentOrdersPayment, img }) => {
   )
 }
 
-const initialAccount = {
+const initialProductsAccount = {
   totalMoney: 0,
   totalQuantity: 0
 }
 
 const Payment = () => {
-  const [recentPdAccount, setRecentPdAccount] = useState(initialAccount);
+  const [recentPdAccount, setRecentPdAccount] = useState(initialProductsAccount);
   const { totalMoney, totalQuantity } = recentPdAccount;
   const navigate = useNavigate();
 
@@ -44,9 +44,9 @@ const Payment = () => {
       return;
     };
     if (window.confirm('Are you Agree with Payment')) {
-      setRecentPdAccount(initialAccount);
+      setRecentPdAccount(initialProductsAccount);
       const recPdAcRef = doc(db, 'recentProductAccounts', 'userId_1');
-      await updateDoc(recPdAcRef, initialAccount);
+      await updateDoc(recPdAcRef, initialProductsAccount);
       const unpaidOrdersRef = collection(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders');
       const unpaidOrderList = [];
       const docsSnap = await getDocs(unpaidOrdersRef);

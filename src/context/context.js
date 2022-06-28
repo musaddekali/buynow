@@ -58,19 +58,18 @@ export const AppContextProvider = ({ children }) => {
         }
     }
 
-
     // Delete Item handler
-    const handleDelete = async (path, id, message) => {
+    const handleDelete = async (path, id, message = 'Are you sure?') => {
         if (window.confirm(message)) {
             try {
                 const ref = doc(db, path, `${id}`);
                 await deleteDoc(ref);
+                console.log('Deleted from ', path, id);
             } catch (e) {
                 console.log(path, 'Delete error -> ', e);
             }
         }
     }
-
 
     // Get Total Ammount 
     useEffect(() => {

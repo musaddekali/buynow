@@ -1,6 +1,8 @@
-const OrderItem = ({ orderItem }) => {
-    const { id, title, image, price, quantity, createdAt, paid } = orderItem;
+import { useState } from "react";
 
+const OrderItem = ({ orderItem, handleCancelOrder, handlePaymentFromOrderList }) => {
+    const { id, title, image, price, quantity, createdAt, paid } = orderItem;
+    const [loading, setLoading] = useState(false);
     return (
         <div className="card-hr">
             <div className="card-hr-hd">
@@ -30,8 +32,19 @@ const OrderItem = ({ orderItem }) => {
                         !paid && (
                             <>
                                 <i className='mb-2 me-2'>Pending</i>
-                                <button className="btn secondary-btn mb-2 me-2">Pay</button>
-                                <button className="btn secondary-btn mb-2 me-2">Cencle Order</button>
+                                <button
+                                    onClick={() =>{ handlePaymentFromOrderList(id); setLoading(true)}}
+                                    className="btn secondary-btn mb-2 me-2"
+                                    disabled={loading}
+                                >
+                                    {loading ? "Loading..." : "Pay"}
+                                </button>
+                                <button
+                                    onClick={() => handleCancelOrder(id)}
+                                    className="btn secondary-btn mb-2 me-2"
+                                >
+                                    Cencle Order
+                                </button>
                             </>
                         )
                     }
