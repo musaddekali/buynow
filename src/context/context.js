@@ -18,7 +18,7 @@ import {
 import { db } from './firebase-config';
 
 const AppContext = React.createContext();
-AppContext.displayName ='AppGlobalContext';
+AppContext.displayName = 'AppGlobalContext';
 
 export const AppContextProvider = ({ children }) => {
     const [products, setProducts] = useState([]);
@@ -58,19 +58,18 @@ export const AppContextProvider = ({ children }) => {
         }
     }
 
-
     // Delete Item handler
-    const handleDelete = async (path, id, message) => {
+    const handleDelete = async (path, id, message = 'Are you sure?') => {
         if (window.confirm(message)) {
             try {
                 const ref = doc(db, path, `${id}`);
                 await deleteDoc(ref);
+                console.log('Deleted from ', path, id);
             } catch (e) {
                 console.log(path, 'Delete error -> ', e);
             }
         }
     }
-
 
     // Get Total Ammount 
     useEffect(() => {
@@ -89,7 +88,7 @@ export const AppContextProvider = ({ children }) => {
     }, [cart]);
 
 
-    // Get App Products 
+    // Get All Products 
     useEffect(() => {
         const getProducts = async () => {
             try {
@@ -101,7 +100,6 @@ export const AppContextProvider = ({ children }) => {
                     data.push(doc.data());
                 });
                 setProducts(data);
-                console.log('Firestore Products retrieved :)');
             } catch (e) {
                 console.log('Firestore getDocs Error -> ', e);
             }

@@ -256,6 +256,7 @@ section {
   width: 80px;
   height: 80px;
   object-fit: cover;
+  background-color: rgba(var(--primary-rgb), 0.85);
 }
 
 .card-hr-title {

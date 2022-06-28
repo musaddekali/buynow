@@ -1,27 +1,25 @@
 .payment-items {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-  gap: 0.5rem;
+  gap: 1rem;
 }
 
 .payment-item {
-  padding: 1.5rem;
+  padding: .25rem;
   border-radius: 0.25rem;
-  box-shadow: var(--shadow-sm);
+  box-shadow: var(--shadow-sm), inset 1px 1px 16px 0px rgb(0 0 0/5%);
   display: grid;
   place-items: center;
   word-break: break-word;
   cursor: pointer;
-  transition: 0.3s ease-in-out;
-  background: var(--secondary);
+  transition: all 0.3s ease-in-out;
   color: #fff;
 }
 
-.payment-item span {
-  font-size: 18px;
-  font-weight: 700;
-  line-height: 1.2;
-  letter-spacing: 1px;
+img.payment-item-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: .5rem;
 }
 
 .payment-item:hover {

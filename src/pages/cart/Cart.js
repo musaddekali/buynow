@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom";
-import { deleteDoc, doc, setDoc, Timestamp, updateDoc } from "firebase/firestore";
+import { collection, deleteDoc, doc, getDocs, setDoc, Timestamp, updateDoc } from "firebase/firestore";
 import { db } from "../../context/firebase-config";
 import { useGlobalContext } from "../../context/context";
 import "./cart.css";
@@ -14,32 +14,79 @@ const Cart = () => {
     if (!cart.length) {
       return;
     }
-    const cartAcRef = doc(db, 'cartAccounts', 'userId_1', 'cartAccount', 'useruid');
+    // Recent Product Account for total Price and Quantity
+    const curPdAcRef = doc(db, 'recentProductAccounts', 'userId_1');
     try {
-      await setDoc(cartAcRef, {
+      await setDoc(curPdAcRef, {
         totalMoney: totalMoney,
         totalQuantity: totalQuantity
       })
-      console.log('cart account total added');
     } catch (e) {
       console.log('Cart Account added Problems -> ', e);
     }
 
+    // Called DeletePastOrders function
+    deletePastOrders();
+
     cart.forEach(async (item) => {
       try {
-        const orderRef = doc(db, 'orders', 'userId_1', 'userOrders', `${item.id}`);
-        await setDoc(orderRef, {
+        // Order Ref (Main Order)
+        const orderRef = doc(db, 'orders', 'userId_1', 'userOrders', item.id.toString());
+        // Recent Unpaid Orders (Temporarely contains current orders)
+        const recentUnpOrdRef = doc(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders', item.id.toString());
+        const data = {
           ...item,
-          payState: false,
+          // id: orderId,
+          paid: false,
           createdAt: Timestamp.fromDate(new Date())
-        })
-        console.log(`${cart.length} item Ordered`);
+        }
+        // add new order
+        await setDoc(orderRef, data);
+        // add new recent order
+        await setDoc(recentUnpOrdRef, data);
+        // delete ordered Cart items
         await deleteDoc(doc(db, 'cart', `${item.id}`));
-        console.log('Deleted cart ordered items id');
       } catch (e) {
         console.log('Order added Problems -> ', e);
       }
     })
+  }
+
+  /// Clear All Orders
+  function clearOrderHistory() {
+    if (window.confirm('Do you want to clear all Cart items?')) {
+      const orderRef = collection(db, 'cart');
+      deleteCollection(orderRef);
+    }
+  }
+
+  async function deleteCollection(collectionRef) {
+    try {
+      const colSnap = await getDocs(collectionRef);
+      let docId = [];
+      colSnap.forEach(item => {
+        docId.push(item.data().id);
+      })
+      docId.forEach(async id => {
+        await deleteDoc(doc(collectionRef, id.toString()));
+      })
+      console.log('carts deleted success');
+    } catch (e) {
+      console.log("cart Collection delete Problems -> ", e)
+    }
+  }
+
+  // Delete Recent Unpaid orders
+  const deletePastOrders = async () => {
+    try {
+      const pastOrdersRef = collection(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders');
+      const pastDataSnap = await getDocs(pastOrdersRef);
+      pastDataSnap.forEach(async item => {
+        await deleteDoc(doc(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders', `${item.data().id}`));
+      });
+    } catch (e) {
+      console.log('Past order data get problems-> ', e);
+    }
   }
 
   //// Quantity Increment
@@ -78,13 +125,23 @@ const Cart = () => {
         <div className="section-title">
           <h3>Your cart has {totalQuantity} item.</h3>
         </div>
+        {cart.length > 2 && (
+          <div className="clear-history mb-3">
+            <button
+              onClick={clearOrderHistory}
+              className="btn primary-btn"
+            >
+              Clear All Cart
+            </button>
+          </div>
+        )}
         <div className="row">
           <div className="col-lg-8">
             <div className="cart-items">
               {!cart.length && (
                 <div className="container">
                   <p>There are no items in this cart</p>
-                  <Link className="btn primary-btn" to="/">CONTINUE SHOPPING</Link>
+                  <Link className="btn primary-btn mb-3" to="/">CONTINUE SHOPPING</Link>
                 </div>
               )}
               {cart.map((c) => (
