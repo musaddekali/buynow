@@ -5,7 +5,6 @@ import React, {
 } from 'react';
 import {
     collection,
-    deleteDoc,
     doc,
     getDocs,
     onSnapshot,
@@ -25,16 +24,18 @@ export const AppContextProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [totalMoney, setTotalMoney] = useState(0);
     const [totalQuantity, setTotalQuantity] = useState(0);
-
+    const [useruid, setUseruid] = useState('useruid1234567');
 
     // Handle Add To Cart (If there item is available then update it otherwise add)
-    const handleAddToCart = async (path, itemId, qnt = 1) => {
+    // Function Argument is ( Product ID, Product Quantity)
+    const handleAddToCart = async (itemId, qnt = 1) => {
         try {
-            const ref = doc(db, path, `${itemId}`);
+            // const ref = doc(db, path, `${itemId}`);
+            const cartRef = doc(db, 'cart', useruid, 'userCart', itemId.toString());
             const cartExistItem = cart.find((item) => item.id === itemId);
             if (cartExistItem) {
                 // update 
-                await updateDoc(ref, {
+                await updateDoc(cartRef, {
                     ...cartExistItem,
                     quantity: cartExistItem.quantity + qnt,
                 });
@@ -44,7 +45,7 @@ export const AppContextProvider = ({ children }) => {
             const newItem = products.find(item => item.id === itemId);
             const { id, title, images, price } = newItem;
             if (newItem) {
-                await setDoc(ref, {
+                await setDoc(cartRef, {
                     id,
                     title,
                     image: images[0],
@@ -55,19 +56,6 @@ export const AppContextProvider = ({ children }) => {
             }
         } catch (e) {
             console.log("Add To Cart Error -> ", e);
-        }
-    }
-
-    // Delete Item handler
-    const handleDelete = async (path, id, message = 'Are you sure?') => {
-        if (window.confirm(message)) {
-            try {
-                const ref = doc(db, path, `${id}`);
-                await deleteDoc(ref);
-                console.log('Deleted from ', path, id);
-            } catch (e) {
-                console.log(path, 'Delete error -> ', e);
-            }
         }
     }
 
@@ -86,7 +74,6 @@ export const AppContextProvider = ({ children }) => {
         }
         getTotal();
     }, [cart]);
-
 
     // Get All Products 
     useEffect(() => {
@@ -107,11 +94,11 @@ export const AppContextProvider = ({ children }) => {
         getProducts();
     }, [])
 
-
     // Get Cart Realtile Update
     useEffect(() => {
+        const cartRef = collection(db, 'cart', useruid, 'userCart');
         const unsubscribe = onSnapshot(
-            query(collection(db, "cart"), orderBy('createdAt', 'desc')),
+            query(cartRef, orderBy('createdAt', 'desc')),
             (snapshot) => {
                 let cart = [];
                 snapshot.forEach(item => {
@@ -123,17 +110,16 @@ export const AppContextProvider = ({ children }) => {
                 console.log("Cart Realtime Data Error -> ", error);
             });
         return () => unsubscribe();
-    }, []);
-
+    }, [useruid]);
 
     return (
         <AppContext.Provider value={{
+            useruid,
             products,
+            handleAddToCart,
             cart,
             totalMoney,
             totalQuantity,
-            handleAddToCart,
-            handleDelete
         }}>
             {children}
         </AppContext.Provider>

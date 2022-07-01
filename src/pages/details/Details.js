@@ -101,7 +101,7 @@ const Details = () => {
               <div className="pd-action-btns">
                 <button className="btn primary-btn">Buy Now</button>
                 <button
-                  onClick={() => handleAddToCart('cart', product.id, qnt)}
+                  onClick={() => handleAddToCart(product.id, qnt)}
                   className="btn accent-btn"
                 >
                   Add to Cart

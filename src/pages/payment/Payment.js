@@ -9,6 +9,7 @@ import img2 from '../../assets/images/nagad.png';
 import img3 from '../../assets/images/duchBangla.png';
 import img4 from '../../assets/images/payoneer.png';
 import img5 from '../../assets/images/paypal.jpg';
+import { useGlobalContext } from "../../context/context";
 
 const paymentImages = [img1, img2, img3, img4, img5];
 
@@ -33,6 +34,7 @@ const initialProductsAccount = {
 }
 
 const Payment = () => {
+  const {useruid} = useGlobalContext();
   const [recentPdAccount, setRecentPdAccount] = useState(initialProductsAccount);
   const { totalMoney, totalQuantity } = recentPdAccount;
   const navigate = useNavigate();
@@ -40,14 +42,14 @@ const Payment = () => {
   //// Handle PAYMENT for current unpaid orders (not all Unpaid orders)
   const handleCurrentOrdersPayment = async () => {
     if (!totalMoney) {
-      alert('You have already Paid');
+      alert('Your Products are not ready to Pay');
       return;
     };
     if (window.confirm('Are you Agree with Payment')) {
       setRecentPdAccount(initialProductsAccount);
-      const recPdAcRef = doc(db, 'recentProductAccounts', 'userId_1');
+      const recPdAcRef = doc(db, 'recentProductAccounts', useruid);
       await updateDoc(recPdAcRef, initialProductsAccount);
-      const unpaidOrdersRef = collection(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders');
+      const unpaidOrdersRef = collection(db, 'recentUnpaidOrders', useruid, 'userRecentUnpaidOrders');
       const unpaidOrderList = [];
       const docsSnap = await getDocs(unpaidOrdersRef);
       docsSnap.forEach((item) => {
@@ -64,7 +66,7 @@ const Payment = () => {
   //// Handle Recent Unpaid Orders (make ---  paid = true);
   const handleUnpaidOrdersToPaid = async (orderItem) => {
     try {
-      const mainOrderRef = doc(db, 'orders', 'userId_1', 'userOrders', orderItem.id.toString());
+      const mainOrderRef = doc(db, 'orders', useruid, 'userOrders', orderItem.id.toString());
       await updateDoc(mainOrderRef, { ...orderItem, paid: true, createdAt: Timestamp.fromDate(new Date()) });
     } catch (e) {
       console.log('Upadate Main orders error -> ', e.message);
@@ -75,7 +77,7 @@ const Payment = () => {
   //// Get Recent Product Account Data (totol Price and Quantity)
   const getRecentProductAccount = useCallback(async () => {
     try {
-      const recPdAcRef = doc(db, 'recentProductAccounts', 'userId_1');
+      const recPdAcRef = doc(db, 'recentProductAccounts', useruid);
       const snap = await getDoc(recPdAcRef);
       setRecentPdAccount(snap.data());
     } catch (e) {
