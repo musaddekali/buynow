@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { BsTrash, BsCart } from "react-icons/bs";
 
-const WishlistItem = ({ wishlist, handleAddToCart, handleDelete }) => {
+const WishlistItem = ({ wishlist, handleAddToCart, deleteSingleWishlistItem }) => {
   const { id, title, price, image, createdAt } = wishlist;
 
   return (
@@ -27,7 +27,7 @@ const WishlistItem = ({ wishlist, handleAddToCart, handleDelete }) => {
         <div className="card-hr-price">
           <span className="price">${price}</span>
           <button
-            onClick={() => handleDelete('wishlist', id, 'Your Product Will be Removed from wishlist. Are you sure?')}
+            onClick={() => deleteSingleWishlistItem(id)}
             className="btn primary-btn wishlist-item-remove"
             title="Remove from Wishlist"
           >

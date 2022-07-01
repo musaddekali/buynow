@@ -1,11 +1,13 @@
 import { collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, setDoc } from 'firebase/firestore';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useGlobalContext } from '../../context/context';
 import { db } from '../../context/firebase-config';
 import OrderItem from './OrderItem';
 import './orders.css';
 
 const Orders = () => {
+  const { useruid } = useGlobalContext();
   const [orderItems, setOrderItems] = useState([]);
   const navigate = useNavigate();
 
@@ -13,17 +15,17 @@ const Orders = () => {
   const handlePaymentFromOrderList = async (itemId) => {
     deletePastOrders();
     try {
-      const orderRef = doc(db, 'orders', 'userId_1', 'userOrders', itemId.toString());
-      const curUnpOrdRef = doc(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders', `${itemId}`)
-      const curPrdAcRef = doc(db, 'recentProductAccounts', 'userId_1');
+      const orderRef = doc(db, 'orders', useruid, 'userOrders', itemId.toString());
+      const recentUnpOrdRef = doc(db, 'recentUnpaidOrders', useruid, 'userRecentUnpaidOrders', `${itemId}`)
+      const recentPrdAcRef = doc(db, 'recentProductAccounts', useruid);
       const orderItem = await getDoc(orderRef);
-      await setDoc(curUnpOrdRef, orderItem.data());
+      await setDoc(recentUnpOrdRef, orderItem.data());
       const { price, quantity } = orderItem.data();
-      await setDoc(curPrdAcRef, {
+      await setDoc(recentPrdAcRef, {
         totalMoney: price * quantity,
         totalQuantity: quantity
       });
-      navigate(`/payment/userId`);
+      navigate(`/payment/${useruid}`);
     } catch (e) {
       console.log('handlePaymentFromOrderList Problem -> ', e)
     }
@@ -32,34 +34,20 @@ const Orders = () => {
   // Delete Recent Unpaid orders
   const deletePastOrders = async () => {
     try {
-      const pastOrdersRef = collection(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders');
+      const pastOrdersRef = collection(db, 'recentUnpaidOrders', useruid, 'userRecentUnpaidOrders');
       const pastDataSnap = await getDocs(pastOrdersRef);
       pastDataSnap.forEach(async item => {
-        await deleteDoc(doc(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders', `${item.data().id}`));
+        await deleteDoc(doc(db, 'recentUnpaidOrders', useruid, 'userRecentUnpaidOrders', `${item.data().id}`));
       });
     } catch (e) {
       console.log('Past order data get problems-> ', e);
     }
   }
 
-  const getOrderItems = useCallback(async () => {
-    try {
-      const q = query(collection(db, 'orders', 'userId_1', 'userOrders'), orderBy('createdAt', 'desc'));
-      const docs = await getDocs(q);
-      let data = [];
-      docs.forEach(item => {
-        data.push(item.data());
-      })
-      setOrderItems(data);
-    } catch (e) {
-      console.log('Order Getting Problems -> ', e);
-    }
-  }, []);
-
   /// Clear All Orders
   function clearOrderHistory() {
     if (window.confirm('Do you want to clear all orders?')) {
-      const orderRef = collection(db, 'orders', 'userId_1', 'userOrders');
+      const orderRef = collection(db, 'orders', useruid, 'userOrders');
       deleteCollection(orderRef);
     }
   }
@@ -84,7 +72,7 @@ const Orders = () => {
   async function handleCancelOrder(itemId) {
     if (window.confirm('Do you Wnat to cancle your Order ?')) {
       try {
-        const docRef = doc(db, 'orders', 'userId_1', 'userOrders', itemId.toString());
+        const docRef = doc(db, 'orders', useruid, 'userOrders', itemId.toString());
         await deleteDoc(docRef);
         setOrderItems(prevS => prevS.filter(order => order.id !== itemId));
         console.log('Single Doc has Deleted! ID -> ', docRef.id);
@@ -93,6 +81,21 @@ const Orders = () => {
       }
     }
   }
+
+  /// Get all orders item
+  const getOrderItems = useCallback(async () => {
+    try {
+      const q = query(collection(db, 'orders', useruid, 'userOrders'), orderBy('createdAt', 'desc'));
+      const docs = await getDocs(q);
+      let data = [];
+      docs.forEach(item => {
+        data.push(item.data());
+      })
+      setOrderItems(data);
+    } catch (e) {
+      console.log('Order Getting Problems -> ', e);
+    }
+  }, []);
 
   useEffect(() => {
     getOrderItems();

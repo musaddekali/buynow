@@ -7,7 +7,7 @@ const CartItem = ({
   price,
   image,
   quantity,
-  handleDelete,
+  deleteSingleCartItem,
   increment,
   decrement,
 }) => {
@@ -30,7 +30,7 @@ const CartItem = ({
         <div className="card-hr-price">
           <span className="price">${price}</span>
           <button
-            onClick={() => handleDelete('cart', id, 'Do you want to Delete this item?')}
+            onClick={() => deleteSingleCartItem(id)}
             className="btn card-hr-remove"
           >
             <BsTrash />

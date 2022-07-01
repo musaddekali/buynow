@@ -17,15 +17,17 @@ import Orders from "./pages/orders/Orders";
 import Wishlist from "./pages/wishlist/Wishlist";
 import Signup from "./pages/signup/Signup";
 import Login from "./pages/login/Login";
+import { useGlobalContext } from "./context/context";
 
 function App() {
+  const { useruid } = useGlobalContext();
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
         <Route path="details/:productId" element={<Details />} />
         <Route path="cart" element={<Cart />} />
-        <Route path="payment/userId" element={<Payment />} />
+        <Route path={`payment/${useruid}`} element={<Payment />} />
         <Route path="profile" element={<Profile />} />
         <Route path="update-profile" element={<UpdateProfile />} />
         <Route path="orders" element={<Orders />} />

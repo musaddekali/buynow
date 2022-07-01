@@ -34,7 +34,7 @@ const ProductCard = ({
             <BsHeart />
           </button>
           <button
-            onClick={() => handleAddToCart('cart', id)}
+            onClick={() => handleAddToCart(id)}
             className="btn accent-btn btn-block"
           >
             Add Cart

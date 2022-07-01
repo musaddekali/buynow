@@ -6,7 +6,7 @@ import "./cart.css";
 import CartItem from "./CartItem";
 
 const Cart = () => {
-  const { cart, totalQuantity, totalMoney, handleDelete } = useGlobalContext();
+  const { useruid, cart, totalQuantity, totalMoney } = useGlobalContext();
   const navigate = useNavigate();
 
   //// Handle Orders
@@ -15,9 +15,9 @@ const Cart = () => {
       return;
     }
     // Recent Product Account for total Price and Quantity
-    const curPdAcRef = doc(db, 'recentProductAccounts', 'userId_1');
+    const recentPdAcRef = doc(db, 'recentProductAccounts', useruid);
     try {
-      await setDoc(curPdAcRef, {
+      await setDoc(recentPdAcRef, {
         totalMoney: totalMoney,
         totalQuantity: totalQuantity
       })
@@ -31,12 +31,11 @@ const Cart = () => {
     cart.forEach(async (item) => {
       try {
         // Order Ref (Main Order)
-        const orderRef = doc(db, 'orders', 'userId_1', 'userOrders', item.id.toString());
+        const orderRef = doc(db, 'orders', useruid, 'userOrders', item.id.toString());
         // Recent Unpaid Orders (Temporarely contains current orders)
-        const recentUnpOrdRef = doc(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders', item.id.toString());
+        const recentUnpOrdRef = doc(db, 'recentUnpaidOrders', useruid, 'userRecentUnpaidOrders', item.id.toString());
         const data = {
           ...item,
-          // id: orderId,
           paid: false,
           createdAt: Timestamp.fromDate(new Date())
         }
@@ -45,17 +44,42 @@ const Cart = () => {
         // add new recent order
         await setDoc(recentUnpOrdRef, data);
         // delete ordered Cart items
-        await deleteDoc(doc(db, 'cart', `${item.id}`));
+        await deleteDoc(doc(db, 'cart', useruid, 'userCart', `${item.id}`));
       } catch (e) {
         console.log('Order added Problems -> ', e);
       }
     })
   }
 
-  /// Clear All Orders
-  function clearOrderHistory() {
+  // Delete Recent Unpaid orders when click for new orders("in -- Proceed to payment -- Btn")
+  const deletePastOrders = async () => {
+    try {
+      const pastOrdersRef = collection(db, 'recentUnpaidOrders', useruid, 'userRecentUnpaidOrders');
+      const pastDataSnap = await getDocs(pastOrdersRef);
+      pastDataSnap.forEach(async item => {
+        await deleteDoc(doc(db, 'recentUnpaidOrders', useruid, 'userRecentUnpaidOrders', `${item.data().id}`));
+      });
+    } catch (e) {
+      console.log('Past order data get problems-> ', e);
+    }
+  }
+
+  /// Delete Single Cart Item
+  async function deleteSingleCartItem(id) {
+    if (window.confirm('Do you want to delete this item?')) {
+      try {
+        const cartRef = doc(db, 'cart', useruid, 'userCart', id.toString());
+        await deleteDoc(cartRef);
+      } catch (e) {
+        console.log('Cart single item deleting problems -> ', e);
+      }
+    }
+  }
+
+  /// Clear All Cart items
+  function clearCartHistory() {
     if (window.confirm('Do you want to clear all Cart items?')) {
-      const orderRef = collection(db, 'cart');
+      const orderRef = collection(db, 'cart', useruid, 'userCart');
       deleteCollection(orderRef);
     }
   }
@@ -70,35 +94,22 @@ const Cart = () => {
       docId.forEach(async id => {
         await deleteDoc(doc(collectionRef, id.toString()));
       })
-      console.log('carts deleted success');
     } catch (e) {
       console.log("cart Collection delete Problems -> ", e)
     }
   }
 
-  // Delete Recent Unpaid orders
-  const deletePastOrders = async () => {
-    try {
-      const pastOrdersRef = collection(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders');
-      const pastDataSnap = await getDocs(pastOrdersRef);
-      pastDataSnap.forEach(async item => {
-        await deleteDoc(doc(db, 'recentUnpaidOrders', 'userId_1', 'userRecentUnpaidOrders', `${item.data().id}`));
-      });
-    } catch (e) {
-      console.log('Past order data get problems-> ', e);
-    }
-  }
 
   //// Quantity Increment
   const increment = async (itemId) => {
     try {
       const cartExistItem = cart.find((item) => item.id === itemId);
-      const docRef = doc(db, "cart", `${itemId}`);
+      const cartRef = doc(db, "cart", useruid, 'userCart', `${itemId}`);
       const data = {
         ...cartExistItem,
         quantity: cartExistItem.quantity + 1,
       };
-      await updateDoc(docRef, data);
+      await updateDoc(cartRef, data);
     } catch (e) {
       console.log("Product Increment Error -> ", e);
     }
@@ -107,13 +118,13 @@ const Cart = () => {
   //// Quantity Decrement
   const decrement = async (itemId) => {
     try {
-      const docRef = doc(db, "cart", `${itemId}`);
+      const cartRef = doc(db, "cart", useruid, 'userCart', `${itemId}`);
       const cartExistItem = cart.find((item) => item.id === itemId);
       const data = {
         ...cartExistItem,
         quantity: cartExistItem.quantity - 1,
       };
-      cartExistItem.quantity >= 2 && (await updateDoc(docRef, data));
+      cartExistItem.quantity >= 2 && (await updateDoc(cartRef, data));
     } catch (e) {
       console.log('Product Decrement Error ->', e)
     }
@@ -128,7 +139,7 @@ const Cart = () => {
         {cart.length > 2 && (
           <div className="clear-history mb-3">
             <button
-              onClick={clearOrderHistory}
+              onClick={clearCartHistory}
               className="btn primary-btn"
             >
               Clear All Cart
@@ -148,7 +159,7 @@ const Cart = () => {
                 <CartItem
                   key={c.id}
                   {...c}
-                  handleDelete={handleDelete}
+                  deleteSingleCartItem={deleteSingleCartItem}
                   increment={increment}
                   decrement={decrement}
                 />
@@ -181,7 +192,7 @@ const Cart = () => {
                 </div>
               </div>
               <button
-                onClick={() => { navigate(`/payment/userId`); handleOrders() }}
+                onClick={() => { handleOrders(); navigate(`/payment/${useruid}`) }}
                 disabled={!cart.length}
                 className="btn primary-btn btn-block">
                 Proceed to payment

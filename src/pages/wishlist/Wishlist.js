@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react';
-import { collection, onSnapshot, orderBy, query } from 'firebase/firestore';
+import { useCallback, useEffect, useState } from 'react';
+import { collection, deleteDoc, doc, getDocs, orderBy, query } from 'firebase/firestore';
 import { db } from '../../context/firebase-config';
 import './wishlist.css';
 import WishlistItem from './WishlistItem';
@@ -7,22 +7,38 @@ import { useGlobalContext } from '../../context/context';
 
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);
-  const {handleAddToCart, handleDelete } = useGlobalContext();
+  const { useruid, handleAddToCart } = useGlobalContext();
+
+  /// Delete Wishlist Single Item
+  const deleteSingleWishlistItem = async (itemId) => {
+    if (window.confirm('Do you want to Remove this item?')) {
+      try {
+        const wishRef = doc(db, 'wishlist', useruid, 'userWishlist', itemId.toString());
+        await deleteDoc(wishRef);
+        setWishlist((w) => w.filter(item => item.id !== itemId));
+      } catch (e) {
+        console.log('Wishtlist single item Deleting Problems -> ', e.message);
+      }
+    }
+  }
 
   // Get all Wishlist 
+  const getWishllist = useCallback(async () => {
+    try {
+      const wishRef = collection(db, 'wishlist', useruid, 'userWishlist');
+      const q = query(wishRef, orderBy('createdAt', 'desc'));
+      const snap = await getDocs(q);
+      let data = [];
+      snap.forEach(item => data.push(item.data()));
+      setWishlist(data);
+    } catch (e) {
+      console.log('Wishlist getting Problems -> ', e);
+    }
+  }, [useruid]);
+
   useEffect(() => {
-    const unsub = onSnapshot(
-      query(collection(db, 'wishlist'), orderBy('createdAt', 'desc')),
-      (snapshot) => {
-        let data = [];
-        snapshot.forEach(doc => data.push(doc.data()));
-        setWishlist(data);
-      },
-      (err) => {
-        console.log('Wishlist Get Data error ->', err);
-      });
-    return () => unsub();
-  }, []);
+    getWishllist();
+  }, [getWishllist]);
 
   if (!wishlist.length) {
     return (
@@ -45,7 +61,7 @@ const Wishlist = () => {
                 key={item.id}
                 wishlist={item}
                 handleAddToCart={handleAddToCart}
-                handleDelete={handleDelete}
+                deleteSingleWishlistItem={deleteSingleWishlistItem}
               />
             ))
           }
