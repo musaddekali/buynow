@@ -35,7 +35,7 @@ const WishlistItem = ({ wishlist, handleAddToCart, deleteSingleWishlistItem }) =
           </button>
         </div>
         <button
-          onClick={() => handleAddToCart('cart', id)}
+          onClick={() => handleAddToCart(id)}
           className="btn primary-btn wishlist-item-cart align-self-center ms-md-auto"
           title="Add to Cart"
         >
