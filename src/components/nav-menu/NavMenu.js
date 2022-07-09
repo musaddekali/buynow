@@ -1,92 +1,24 @@
 import { Link } from "react-router-dom";
-import { BsEmojiSmile, BsBox, BsHeart, BsBoxArrowLeft } from "react-icons/bs";
 import "./nav-menu.css";
-import Img from "../../assets/images/coffeeCup.jpg";
 import { useGlobalContext } from "../../context/context";
-
-const NavmenuGuestLink = () => {
-  return (
-    <Link className="nav-a nav-menu-height" to="/signup">
-      <span className="nav-user-icon">
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-        >
-          <g fill="currentColor" fillRule="evenodd">
-            <circle
-              cx="12"
-              cy="12"
-              r="12"
-              fill="#d92e35"
-              fillRule="nonzero"
-            ></circle>
-            <path
-              fill="#FFF"
-              fillRule="nonzero"
-              d="M13.1818252 12.6666667C15.366281 12.6666667 17.1649879 14.3335701 17.3176726 16.4681904L17.3252836 16.6080555 17.3333337 17.0416667C17.3333337 17.1848516 17.2285728 17.3039382 17.0904223 17.3286342L17.0371901 17.3333333 6.96281056 17.3333333C6.81742783 17.3333333 6.69651331 17.2301562 6.67143827 17.0940941L6.666667 17.0416667 6.666667 16.75C6.666667 14.5418198 8.44636147 12.7430258 10.670143 12.6690344L10.8126768 12.6666667 13.1818252 12.6666667zM12.0000003 6C13.6568546 6 15.0000003 7.34314575 15.0000003 9 15.0000003 10.6568543 13.6568546 12 12.0000003 12 10.3431461 12 9.00000033 10.6568543 9.00000033 9 9.00000033 7.34314575 10.3431461 6 12.0000003 6z"
-            ></path>
-          </g>
-        </svg>
-      </span>
-      <span className="user-state">SignUp</span>
-    </Link>
-  );
-};
-
-const NavmenuUserLink = () => {
-  const dropdown = [
-    {
-      id: 1,
-      name: "Manage Profile",
-      link: "/profile",
-      icon: <BsEmojiSmile />,
-    },
-    {
-      id: 2,
-      name: "My Orders",
-      link: "/orders",
-      icon: <BsBox />,
-    },
-    {
-      id: 3,
-      name: "My Wishlist",
-      link: "/wishlist",
-      icon: <BsHeart />,
-    },
-    {
-      id: 4,
-      name: "Logout",
-      link: "#",
-      icon: <BsBoxArrowLeft />,
-    },
-  ];
-  return (
-    <div className="nav-menu-user nav-menu-dropdown nav-menu-height">
-      <img
-        className="nav-menu-user-img"
-        src={Img}
-        height="40"
-        width="40"
-        alt="profile"
-      />
-      <span className="nav-menu-username">Mahid Ahmod</span>
-      {/* Dropdown Content  */}
-      <ul className="nav-menu-dropdown-content">
-        {dropdown.map((item) => (
-          <li key={item.id}>
-            <span className="nav-menu-dropdown-icon">{item.icon}</span>
-            <Link to={item.link}>{item.name}</Link>
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-};
+import NavmenuGuestLink from "./NavmenuGuestLink";
+import NavmenuUserLink from "./NavmenuUserLink";
+import { signOut } from "firebase/auth";
+import { auth } from "../../context/firebase-config";
 
 const NavMenu = () => {
-  const { totalQuantity } = useGlobalContext();
+  const { user, totalQuantity } = useGlobalContext();
+
+  const logOut = async () => {
+    if (!user) return;
+    if (window.confirm('Do You Want To LogOut?')) {
+      try {
+        await signOut(auth);
+      } catch (e) {
+        console.log('User logout problems -> ', e);
+      }
+    }
+  }
 
   return (
     <header className="header fixed-top">
@@ -107,10 +39,9 @@ const NavMenu = () => {
         </div>
         <div className="nav-menu-right">
           <div className="nav-menu-links">
-            {/* If User False */}
-            <NavmenuGuestLink />
-            {/* If User True */}
-            <NavmenuUserLink />
+            {
+              user ? <NavmenuUserLink logOut={logOut}/> : <NavmenuGuestLink />
+            }
             <Link className="cart nav-a nav-menu-height" to="/cart">
               <div className="cart-badge-wrap">
                 {totalQuantity ? <span className="count">{totalQuantity}</span> : ''}

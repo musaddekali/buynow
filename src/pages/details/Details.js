@@ -7,6 +7,7 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import './details.css';
 import { Carousel } from 'react-responsive-carousel';
 import { useGlobalContext } from '../../context/context';
+import Loading from '../../components/loading/Loading';
 
 const Details = () => {
   const [product, setProduct] = useState();
@@ -38,7 +39,7 @@ const Details = () => {
 
   if (!product) {
     return (
-      <h1>Loading...</h1>
+      <Loading />
     )
   }
 
@@ -98,15 +99,12 @@ const Details = () => {
                   </button>
                 </div>
               </div>
-              <div className="pd-action-btns">
-                <button className="btn primary-btn">Buy Now</button>
-                <button
-                  onClick={() => handleAddToCart(product.id, qnt)}
-                  className="btn accent-btn"
-                >
-                  Add to Cart
-                </button>
-              </div>
+              <button
+                onClick={() => handleAddToCart(product.id, qnt)}
+                className="btn accent-btn btn-block"
+              >
+                Add to Cart
+              </button>
             </div>
           </div>
         </div>

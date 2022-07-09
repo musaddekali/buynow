@@ -17,21 +17,20 @@ import Orders from "./pages/orders/Orders";
 import Wishlist from "./pages/wishlist/Wishlist";
 import Signup from "./pages/signup/Signup";
 import Login from "./pages/login/Login";
-import { useGlobalContext } from "./context/context";
+import PrivateRoute from "./components/privateRoute/PrivateRoute";
 
 function App() {
-  const { useruid } = useGlobalContext();
   return (
     <Routes>
       <Route path="/" element={<Layout />}>
         <Route index element={<Home />} />
-        <Route path="details/:productId" element={<Details />} />
-        <Route path="cart" element={<Cart />} />
-        <Route path={`payment/${useruid}`} element={<Payment />} />
-        <Route path="profile" element={<Profile />} />
-        <Route path="update-profile" element={<UpdateProfile />} />
-        <Route path="orders" element={<Orders />} />
-        <Route path="wishlist" element={<Wishlist />} />
+        <Route path={`/details/:productId`} element={<Details />} />
+        <Route path="cart" element={<PrivateRoute><Cart /></PrivateRoute>} />
+        <Route path="payment" element={<PrivateRoute><Payment /></PrivateRoute>} />
+        <Route path="profile" element={<PrivateRoute><Profile /></PrivateRoute>} />
+        <Route path="update-profile" element={<PrivateRoute><UpdateProfile /></PrivateRoute>} />
+        <Route path="orders" element={<PrivateRoute><Orders /></PrivateRoute>} />
+        <Route path="wishlist" element={<PrivateRoute><Wishlist /></PrivateRoute>} />
         <Route path="signup" element={<Signup />} />
         <Route path="login" element={<Login />} />
         <Route path="*" element={<NoPage />} />
