@@ -16,7 +16,7 @@ import OrderItem from "./OrderItem";
 import "./orders.css";
 
 const Orders = () => {
-  const { useruid } = useGlobalContext();
+  const { user } = useGlobalContext();
   const [orderItems, setOrderItems] = useState([]);
   const [filterOrder, setFilterOrder] = useState([]);
   const [filterValue, setFilterValue] = useState("all");
@@ -45,18 +45,18 @@ const Orders = () => {
       const orderRef = doc(
         db,
         "orders",
-        useruid,
+        user.uid,
         "userOrders",
         itemId.toString()
       );
       const recentUnpOrdRef = doc(
         db,
         "recentUnpaidOrders",
-        useruid,
+        user.uid,
         "userRecentUnpaidOrders",
         `${itemId}`
       );
-      const recentPrdAcRef = doc(db, "recentProductAccounts", useruid);
+      const recentPrdAcRef = doc(db, "recentProductAccounts", user.uid);
       const orderItem = await getDoc(orderRef);
       await setDoc(recentUnpOrdRef, orderItem.data());
       const { price, quantity } = orderItem.data();
@@ -64,7 +64,7 @@ const Orders = () => {
         totalMoney: price * quantity,
         totalQuantity: quantity,
       });
-      navigate(`/payment/${useruid}`);
+      navigate('/payment');
     } catch (e) {
       console.log("handlePaymentFromOrderList Problem -> ", e);
     }
@@ -76,7 +76,7 @@ const Orders = () => {
       const pastOrdersRef = collection(
         db,
         "recentUnpaidOrders",
-        useruid,
+        user.uid,
         "userRecentUnpaidOrders"
       );
       const pastDataSnap = await getDocs(pastOrdersRef);
@@ -85,7 +85,7 @@ const Orders = () => {
           doc(
             db,
             "recentUnpaidOrders",
-            useruid,
+            user.uid,
             "userRecentUnpaidOrders",
             `${item.data().id}`
           )
@@ -99,7 +99,7 @@ const Orders = () => {
   /// Clear All Orders
   function clearOrderHistory() {
     if (window.confirm("Do you want to clear all orders?")) {
-      const orderRef = collection(db, "orders", useruid, "userOrders");
+      const orderRef = collection(db, "orders", user.uid, "userOrders");
       deleteCollection(orderRef);
     }
   }
@@ -127,7 +127,7 @@ const Orders = () => {
         const docRef = doc(
           db,
           "orders",
-          useruid,
+          user.uid,
           "userOrders",
           itemId.toString()
         );
@@ -144,7 +144,7 @@ const Orders = () => {
   const getOrderItems = useCallback(async () => {
     try {
       const q = query(
-        collection(db, "orders", useruid, "userOrders"),
+        collection(db, "orders", user.uid, "userOrders"),
         orderBy("createdAt", "desc")
       );
       const docs = await getDocs(q);
@@ -157,7 +157,7 @@ const Orders = () => {
     } catch (e) {
       console.log("Order Getting Problems -> ", e);
     }
-  }, []);
+  }, [user.uid]);
 
   useEffect(() => {
     getOrderItems();

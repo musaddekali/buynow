@@ -6,7 +6,7 @@ import "./cart.css";
 import CartItem from "./CartItem";
 
 const Cart = () => {
-  const { useruid, cart, totalQuantity, totalMoney } = useGlobalContext();
+  const { user, cart, totalQuantity, totalMoney } = useGlobalContext();
   const navigate = useNavigate();
 
   //// Handle Orders
@@ -15,7 +15,7 @@ const Cart = () => {
       return;
     }
     // Recent Product Account for total Price and Quantity
-    const recentPdAcRef = doc(db, 'recentProductAccounts', useruid);
+    const recentPdAcRef = doc(db, 'recentProductAccounts', user.uid);
     try {
       await setDoc(recentPdAcRef, {
         totalMoney: totalMoney,
@@ -31,9 +31,9 @@ const Cart = () => {
     cart.forEach(async (item) => {
       try {
         // Order Ref (Main Order)
-        const orderRef = doc(db, 'orders', useruid, 'userOrders', item.id.toString());
+        const orderRef = doc(db, 'orders', user.uid, 'userOrders', item.id.toString());
         // Recent Unpaid Orders (Temporarely contains current orders)
-        const recentUnpOrdRef = doc(db, 'recentUnpaidOrders', useruid, 'userRecentUnpaidOrders', item.id.toString());
+        const recentUnpOrdRef = doc(db, 'recentUnpaidOrders', user.uid, 'userRecentUnpaidOrders', item.id.toString());
         const data = {
           ...item,
           paid: false,
@@ -44,7 +44,7 @@ const Cart = () => {
         // add new recent order
         await setDoc(recentUnpOrdRef, data);
         // delete ordered Cart items
-        await deleteDoc(doc(db, 'cart', useruid, 'userCart', `${item.id}`));
+        await deleteDoc(doc(db, 'cart', user.uid, 'userCart', `${item.id}`));
       } catch (e) {
         console.log('Order added Problems -> ', e);
       }
@@ -54,10 +54,10 @@ const Cart = () => {
   // Delete Recent Unpaid orders when click for new orders("in -- Proceed to payment -- Btn")
   const deletePastOrders = async () => {
     try {
-      const pastOrdersRef = collection(db, 'recentUnpaidOrders', useruid, 'userRecentUnpaidOrders');
+      const pastOrdersRef = collection(db, 'recentUnpaidOrders', user.uid, 'userRecentUnpaidOrders');
       const pastDataSnap = await getDocs(pastOrdersRef);
       pastDataSnap.forEach(async item => {
-        await deleteDoc(doc(db, 'recentUnpaidOrders', useruid, 'userRecentUnpaidOrders', `${item.data().id}`));
+        await deleteDoc(doc(db, 'recentUnpaidOrders', user.uid, 'userRecentUnpaidOrders', `${item.data().id}`));
       });
     } catch (e) {
       console.log('Past order data get problems-> ', e);
@@ -68,7 +68,7 @@ const Cart = () => {
   async function deleteSingleCartItem(id) {
     if (window.confirm('Do you want to delete this item?')) {
       try {
-        const cartRef = doc(db, 'cart', useruid, 'userCart', id.toString());
+        const cartRef = doc(db, 'cart', user.uid, 'userCart', id.toString());
         await deleteDoc(cartRef);
       } catch (e) {
         console.log('Cart single item deleting problems -> ', e);
@@ -79,7 +79,7 @@ const Cart = () => {
   /// Clear All Cart items
   function clearCartHistory() {
     if (window.confirm('Do you want to clear all Cart items?')) {
-      const orderRef = collection(db, 'cart', useruid, 'userCart');
+      const orderRef = collection(db, 'cart', user.uid, 'userCart');
       deleteCollection(orderRef);
     }
   }
@@ -104,7 +104,7 @@ const Cart = () => {
   const increment = async (itemId) => {
     try {
       const cartExistItem = cart.find((item) => item.id === itemId);
-      const cartRef = doc(db, "cart", useruid, 'userCart', `${itemId}`);
+      const cartRef = doc(db, "cart", user.uid, 'userCart', `${itemId}`);
       const data = {
         ...cartExistItem,
         quantity: cartExistItem.quantity + 1,
@@ -118,7 +118,7 @@ const Cart = () => {
   //// Quantity Decrement
   const decrement = async (itemId) => {
     try {
-      const cartRef = doc(db, "cart", useruid, 'userCart', `${itemId}`);
+      const cartRef = doc(db, "cart", user.uid, 'userCart', `${itemId}`);
       const cartExistItem = cart.find((item) => item.id === itemId);
       const data = {
         ...cartExistItem,
@@ -192,7 +192,7 @@ const Cart = () => {
                 </div>
               </div>
               <button
-                onClick={() => { handleOrders(); navigate(`/payment/${useruid}`) }}
+                onClick={() => { handleOrders(); navigate('/payment') }}
                 disabled={!cart.length}
                 className="btn primary-btn btn-block">
                 Proceed to payment

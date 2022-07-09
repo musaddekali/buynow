@@ -10,6 +10,7 @@ import img3 from '../../assets/images/duchBangla.png';
 import img4 from '../../assets/images/payoneer.png';
 import img5 from '../../assets/images/paypal.jpg';
 import { useGlobalContext } from "../../context/context";
+import Loading from '../../components/loading/Loading';
 
 const paymentImages = [img1, img2, img3, img4, img5];
 
@@ -34,7 +35,7 @@ const initialProductsAccount = {
 }
 
 const Payment = () => {
-  const {useruid} = useGlobalContext();
+  const {user} = useGlobalContext();
   const [recentPdAccount, setRecentPdAccount] = useState(initialProductsAccount);
   const { totalMoney, totalQuantity } = recentPdAccount;
   const navigate = useNavigate();
@@ -47,9 +48,9 @@ const Payment = () => {
     };
     if (window.confirm('Are you Agree with Payment')) {
       setRecentPdAccount(initialProductsAccount);
-      const recPdAcRef = doc(db, 'recentProductAccounts', useruid);
+      const recPdAcRef = doc(db, 'recentProductAccounts', user.uid);
       await updateDoc(recPdAcRef, initialProductsAccount);
-      const unpaidOrdersRef = collection(db, 'recentUnpaidOrders', useruid, 'userRecentUnpaidOrders');
+      const unpaidOrdersRef = collection(db, 'recentUnpaidOrders', user.uid, 'userRecentUnpaidOrders');
       const unpaidOrderList = [];
       const docsSnap = await getDocs(unpaidOrdersRef);
       docsSnap.forEach((item) => {
@@ -66,7 +67,7 @@ const Payment = () => {
   //// Handle Recent Unpaid Orders (make ---  paid = true);
   const handleUnpaidOrdersToPaid = async (orderItem) => {
     try {
-      const mainOrderRef = doc(db, 'orders', useruid, 'userOrders', orderItem.id.toString());
+      const mainOrderRef = doc(db, 'orders', user.uid, 'userOrders', orderItem.id.toString());
       await updateDoc(mainOrderRef, { ...orderItem, paid: true, createdAt: Timestamp.fromDate(new Date()) });
     } catch (e) {
       console.log('Upadate Main orders error -> ', e.message);
@@ -77,17 +78,23 @@ const Payment = () => {
   //// Get Recent Product Account Data (totol Price and Quantity)
   const getRecentProductAccount = useCallback(async () => {
     try {
-      const recPdAcRef = doc(db, 'recentProductAccounts', useruid);
+      const recPdAcRef = doc(db, 'recentProductAccounts', user.uid);
       const snap = await getDoc(recPdAcRef);
       setRecentPdAccount(snap.data());
     } catch (e) {
       console.log('Cart Account Getting Problems -> ', e)
     }
-  }, [setRecentPdAccount]);
+  }, [setRecentPdAccount, user.uid]);
 
   useEffect(() => {
     getRecentProductAccount()
   }, [getRecentProductAccount])
+
+  if(!Object.values(recentPdAccount).every(n => n)) {
+    return (
+      <Loading/>
+    )
+  }
 
   return (
     <section className="payment">

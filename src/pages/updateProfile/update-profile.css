@@ -1,0 +1,23 @@
+.update-profile-img-area {
+  display: grid;
+  place-items: center;
+  margin-bottom: 1rem;
+}
+
+.update-profile-img-area img {
+  width: 128px;
+  height: 128px;
+  margin-bottom: 1rem;
+  object-fit: cover;
+  border-radius: 50%;
+}
+
+.profile-img-upload-btn.btn {
+  width: 128px;
+  font-size: 14px;
+}
+
+.profile-img-upload-btn > .upload-icon {
+  font-size: 1rem;
+  margin-right: 0.25rem;
+}

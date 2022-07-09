@@ -3,14 +3,19 @@ import { db } from "../../context/firebase-config";
 import './home.css';
 import ProductCard from './ProductCard';
 import { useGlobalContext } from '../../context/context';
+import { useNavigate } from "react-router-dom";
 
 const Home = () => {
-  const {useruid, products, handleAddToCart } = useGlobalContext();
-
+  const {user, products, handleAddToCart } = useGlobalContext();
+  const navigate = useNavigate();
   // Add Wishlist
   const handleAddToWishlist = async (itemId) => {
+    if(!user) {
+      navigate('/login');
+      return;
+    }
     try {
-      const wishRef = doc(db, 'wishlist', useruid, 'userWishlist', `${itemId}`);
+      const wishRef = doc(db, 'wishlist', user.uid, 'userWishlist', `${itemId}`);
       const currentItem = products.find(item => item.id === itemId);
       const { id, images, title, price } = currentItem;
       const data = {
