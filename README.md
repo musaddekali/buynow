@@ -10,5 +10,5 @@
 - Order list // done
 - profile // working
 - update profile
-- User Auth (signup, login) // working
+- User Auth (signup, login) // done
 - Global alert

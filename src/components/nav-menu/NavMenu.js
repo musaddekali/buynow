@@ -29,7 +29,7 @@ const NavMenu = () => {
             title="Go Home"
             className="nav-menu-logo nav-menu-height"
           >
-            <span>E-commerce</span>
+            <span>BuyNow</span>
           </Link>
         </div>
         <div className="nav-menu-middle">
