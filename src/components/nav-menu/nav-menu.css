@@ -38,7 +38,6 @@
   align-items: center;
   color: var(--black);
   position: relative;
-  text-transform: uppercase;
 }
 
 .nav-menu-links .nav-a::before {
@@ -59,8 +58,12 @@
   align-items: center;
 }
 
-.nav-menu-links .nav-user-icon {
-  margin-right: 8px;
+.nav-menu-links .nav-a.nav-menu-guest {
+  padding: 0 8px;
+}
+
+.nav-menu-links .nav-a .user-state {
+  font-size: 13px;
 }
 
 .nav-menu-search {
@@ -207,8 +210,13 @@
     order: 3;
   }
 
+  .nav-menu-search.nav-menu-height {
+    height: auto !important;
+  }
+
   .nav-menu-search input[type="text"] {
     width: 100%;
+    padding: 8px 4px 8px 16px;
   }
 
   .nav-menu-links .user-wrap .user-state {
@@ -217,9 +225,14 @@
 }
 
 @media (max-width: 575px) {
+  .nav-menu-logo {
+    font-size: 20px;
+  }
+
   .nav-menu-username {
     display: none;
   }
+
   .nav-menu-dropdown-content {
     left: -50px;
   }
