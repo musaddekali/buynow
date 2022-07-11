@@ -31,18 +31,19 @@
   position: relative;
 }
 
-.log-sign-pdw-input > span {
+.log-sign-pdw-input > .log-sign-show-pwd-btn {
   position: absolute;
   right: 12px;
   top: 50%;
   transform: translateY(-50%);
-  font-size: 12px;
-  padding: 0.125rem 0.25rem;
+  font-size: 14px;
+  padding: 0.125rem 0.5rem;
   border-radius: 0.25rem;
   display: inline-block;
   color: #000;
   background: var(--gray-300);
   cursor: pointer;
+  -webkit-user-select: none;
   user-select: none;
 }
 

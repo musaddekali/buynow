@@ -1,8 +1,9 @@
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { doc, setDoc, Timestamp } from "firebase/firestore";
-import { useState } from "react";
+import { useState,useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { auth, db } from "../../context/firebase-config";
+import {BsEye, BsEyeSlash} from 'react-icons/bs';
 import "./signup.css";
 
 const initialFormData = {
@@ -15,7 +16,20 @@ const Signup = () => {
   const [formData, setFormData] = useState(initialFormData);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [isShow, setIsShow] = useState(false);
+  const passwordRef = useRef(null);
   const navigate = useNavigate();
+
+  const showPassword = () => {
+    let elm = passwordRef.current;
+    if (elm.type === 'password') {
+      elm.type = 'text';
+      setIsShow(true);
+    } else if (elm.type === 'text') {
+      elm.type = 'password';
+      setIsShow(false);
+    }
+  }
 
   const handleOnChange = (e) => {
     const name = e.target.name;
@@ -84,13 +98,20 @@ const Signup = () => {
           <div className="log-sign-pdw-input">
             <input
               onChange={handleOnChange}
+              ref={passwordRef}
               id="pwd"
               className="form-control mb-3"
               name="pwd"
               type="password"
               placeholder="Password..."
             />
-            <span>show</span>
+            <span
+              onClick={showPassword}
+              className="log-sign-show-pwd-btn"
+            >
+              {!isShow ? <BsEyeSlash/> : <BsEye/>}
+              {/* {isShow ? 'Hide' : 'Show'} */}
+            </span>
           </div>
           <button
             type="submit"
