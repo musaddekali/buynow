@@ -4,6 +4,16 @@
   margin-bottom: 1rem;
 }
 
+.update-profile-img-area .user-avatar-container {
+  width: 128px;
+  height: 128px;
+  margin: 0 auto 1rem auto;
+}
+
+.update-profile-img-area .user-avatar-text {
+  font-size: 50px;
+}
+
 .update-profile-img-area img {
   width: 128px;
   height: 128px;

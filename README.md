@@ -8,7 +8,8 @@
 - delete // done
 - wishlist // done
 - Order list // done
-- profile // working
-- update profile
+- profile // done
+- update profile // done
 - User Auth (signup, login) // done
+- show/hide password field // working...
 - Global alert
