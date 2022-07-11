@@ -1,4 +1,3 @@
-import { getAuth } from "firebase/auth";
 import { Navigate } from "react-router-dom";
 import { useGlobalContext } from "../../context/context";
 

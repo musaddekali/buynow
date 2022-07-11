@@ -131,7 +131,6 @@ export const AppContextProvider = ({ children }) => {
                 getDoc(doc(db, "users", uid))
                     .then((snap) => {
                         setUser(snap.data());
-                        console.log("Current User", snap.data());
                     })
                     .catch((e) => {
                         console.log("Current User State Getting Problems", e);
@@ -148,6 +147,7 @@ export const AppContextProvider = ({ children }) => {
         <AppContext.Provider
             value={{
                 user,
+                setUser,
                 products,
                 handleAddToCart,
                 cart,

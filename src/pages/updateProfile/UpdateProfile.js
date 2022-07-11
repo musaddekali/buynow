@@ -1,9 +1,11 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import "./update-profile.css";
-import Img from "../../assets/images/coffeeCup.jpg";
-import { storage } from "../../context/firebase-config";
+import { db, storage } from "../../context/firebase-config";
 import { getDownloadURL, ref, uploadBytes } from "firebase/storage";
 import { useGlobalContext } from "../../context/context";
+import UserAvatar from "../../components/userAvater/UserAvatar";
+import { doc, updateDoc } from "firebase/firestore";
+import { useNavigate } from "react-router-dom";
 
 const initialFormData = {
   img: null,
@@ -14,8 +16,11 @@ const initialFormData = {
 
 const UpdateProfile = () => {
   const [formData, setFormData] = useState(initialFormData);
-  const { useruid } = useGlobalContext();
+  const { name, mobile, address } = formData;
+  const { user, setUser } = useGlobalContext();
   const [imgDataURl, setImgDataUrl] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
 
   const handleOnChange = (e) => {
     const name = e.target.name;
@@ -33,19 +38,39 @@ const UpdateProfile = () => {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     if (!formData.name) {
+      setLoading(false);
       console.log("Fill the Required** fields");
       return;
     }
-    if (formData.img) {
-      const imgRef = ref(storage, `profileImg/${useruid}/${formData.img.name}`);
-      await uploadBytes(imgRef, formData.img);
-      const link = await getDownloadURL(imgRef);
-      console.log("Link", link);
+    try {
+      let imgLink = null;
+      if (formData.img) {
+        const imgRef = ref(storage, `profileImg/${user.uid}/${formData.img.name}`);
+        await uploadBytes(imgRef, formData.img);
+        const link = await getDownloadURL(imgRef);
+        imgLink = link;
+      }
+      await updateDoc(doc(db, 'users', user.uid), { ...formData, img: imgLink ? imgLink : imgDataURl });
+      setUser({ ...user, ...formData, img: imgLink ? imgLink : imgDataURl });
+      navigate('/profile');
+    } catch (error) {
+      setLoading(false);
+      console.log('Profile Update problems', error.message);
     }
-    setFormData(initialFormData);
-    console.log("Form Submited", formData);
+    setLoading(false);
   };
+
+  useEffect(() => {
+    const { name, img, mobile, address } = user;
+    setFormData({
+      name,
+      mobile,
+      address
+    })
+    setImgDataUrl(img ? img : null);
+  }, [user]);
 
   return (
     <section className="update-profile">
@@ -56,7 +81,8 @@ const UpdateProfile = () => {
         <div className="row">
           <div className="col-lg-4 order-lg-2">
             <div className="update-profile-img-area">
-              <img src={imgDataURl} width="120" height="120" alt="Profile" />
+              {/* <img src={imgDataURl} width="120" height="120" alt="Profile" /> */}
+              <UserAvatar src={imgDataURl} name={user?.name} />
               <label
                 htmlFor="file-upload"
                 className="btn primary-btn profile-img-upload-btn"
@@ -81,7 +107,7 @@ const UpdateProfile = () => {
                 name="img"
                 className="d-none"
                 type="file"
-                accept=".jpg, .png, .jpeg"
+                accept="image/*"
               />
             </div>
           </div>
@@ -95,7 +121,7 @@ const UpdateProfile = () => {
                 className="form-control mb-3 shadow-none"
                 id="name"
                 name="name"
-                value={formData.name}
+                value={name}
                 type="text"
               />
 
@@ -107,8 +133,9 @@ const UpdateProfile = () => {
                 className="form-control mb-3 shadow-none"
                 id="mobile"
                 name="mobile"
-                value={formData.mobile}
+                value={mobile ? mobile : ''}
                 type="text"
+                placeholder="Your Mobile Number"
               />
 
               <label className="form-label" htmlFor="address">
@@ -119,11 +146,16 @@ const UpdateProfile = () => {
                 className="form-control mb-4 shadow-none"
                 id="address"
                 name="address"
-                value={formData.address}
+                value={address ? address : ''}
                 type="text"
+                placeholder="Your home/office address"
               />
-              <button type="submit" className="btn secondary-btn">
-                Save Changes
+              <button
+                type="submit"
+                className="btn secondary-btn"
+                disabled={loading}
+              >
+                {loading ? 'Updating...' : 'Save Changes'}
               </button>
             </form>
           </div>

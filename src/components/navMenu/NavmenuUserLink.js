@@ -1,28 +1,7 @@
 import { BsEmojiSmile, BsBox, BsHeart, BsBoxArrowLeft } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { useGlobalContext } from "../../context/context";
-
-const UserAvatar = ({ src, name }) => {
-    return (
-        <>
-            {
-                src ? (
-                    <img
-                        className="nav-menu-user-img"
-                        src={src}
-                        height="40"
-                        width="40"
-                        alt="profile"
-                    />
-                ) : (
-                    <span className="nav-menu-user-noimg">
-                        {name.charAt(0).toUpperCase()}
-                    </span>
-                )
-            }
-        </>
-    )
-}
+import UserAvatar from '../../components/userAvater/UserAvatar';
 
 const NavmenuUserLink = ({ logOut }) => {
     const { user } = useGlobalContext();
@@ -60,12 +39,6 @@ const NavmenuUserLink = ({ logOut }) => {
             {/* Dropdown Content  */}
             <ul className="nav-menu-dropdown-content">
                 {
-                    // dropdown.map((item) => (
-                    //     <li key={item.id}>
-                    //         <span className="nav-menu-dropdown-icon">{item.icon}</span>
-                    //         <Link to={item.link}>{item.name}</Link>
-                    //     </li>
-                    // ))
                     dropdown.map((item) => {
                         if (item.name === 'Logout') {
                             return <li key={item.id}>

@@ -1,9 +1,11 @@
-.profile-img {
+.profile .user-avatar-container {
   width: 128px;
   height: 128px;
-  object-fit: cover;
-  border-radius: 50%;
-  border: 2px solid var(--primary);
+  margin: 0 auto 0 auto;
+}
+
+.profile .user-avatar-text {
+  font-size: 50px;
 }
 
 .profile-item {
