@@ -6,7 +6,7 @@ import { useGlobalContext } from '../../context/context';
 import { useNavigate } from "react-router-dom";
 
 const Home = () => {
-  const {user, products, handleAddToCart } = useGlobalContext();
+  const {user, products, handleAddToCart, showAlert } = useGlobalContext();
   const navigate = useNavigate();
   // Add Wishlist
   const handleAddToWishlist = async (itemId) => {
@@ -15,6 +15,7 @@ const Home = () => {
       return;
     }
     try {
+      showAlert('Wishlist Item Added');
       const wishRef = doc(db, 'wishlist', user.uid, 'userWishlist', `${itemId}`);
       const currentItem = products.find(item => item.id === itemId);
       const { id, images, title, price } = currentItem;

@@ -6,7 +6,7 @@ import "./cart.css";
 import CartItem from "./CartItem";
 
 const Cart = () => {
-  const { user, cart, totalQuantity, totalMoney } = useGlobalContext();
+  const { user, cart, totalQuantity, totalMoney, showAlert } = useGlobalContext();
   const navigate = useNavigate();
 
   //// Handle Orders
@@ -41,6 +41,7 @@ const Cart = () => {
         }
         // add new order
         await setDoc(orderRef, data);
+        showAlert('Your Products has Ordered.')
         // add new recent order
         await setDoc(recentUnpOrdRef, data);
         // delete ordered Cart items
@@ -68,6 +69,7 @@ const Cart = () => {
   async function deleteSingleCartItem(id) {
     if (window.confirm('Do you want to delete this item?')) {
       try {
+        showAlert('Item Deleted');
         const cartRef = doc(db, 'cart', user.uid, 'userCart', id.toString());
         await deleteDoc(cartRef);
       } catch (e) {
@@ -81,6 +83,7 @@ const Cart = () => {
     if (window.confirm('Do you want to clear all Cart items?')) {
       const orderRef = collection(db, 'cart', user.uid, 'userCart');
       deleteCollection(orderRef);
+      showAlert('All Cart item has cleared');
     }
   }
 
@@ -98,7 +101,6 @@ const Cart = () => {
       console.log("cart Collection delete Problems -> ", e)
     }
   }
-
 
   //// Quantity Increment
   const increment = async (itemId) => {

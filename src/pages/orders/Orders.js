@@ -16,7 +16,7 @@ import OrderItem from "./OrderItem";
 import "./orders.css";
 
 const Orders = () => {
-  const { user } = useGlobalContext();
+  const { user, showAlert } = useGlobalContext();
   const [orderItems, setOrderItems] = useState([]);
   const [filterOrder, setFilterOrder] = useState([]);
   const [filterValue, setFilterValue] = useState("all");
@@ -114,6 +114,7 @@ const Orders = () => {
       docId.forEach(async (id) => {
         await deleteDoc(doc(collectionRef, id.toString()));
         setOrderItems([]);
+        showAlert('All Items deleted');
       });
     } catch (e) {
       console.log("Orders Collection delete Problems -> ", e);
@@ -122,7 +123,7 @@ const Orders = () => {
 
   //// Cancel Single Order
   async function handleCancelOrder(itemId) {
-    if (window.confirm("Do you Wnat to cancle your Order ?")) {
+    if (window.confirm("Do you want to cancle your Order ?")) {
       try {
         const docRef = doc(
           db,
@@ -132,8 +133,9 @@ const Orders = () => {
           itemId.toString()
         );
         await deleteDoc(docRef);
-        setOrderItems((prevS) => prevS.filter((order) => order.id !== itemId));
-        console.log("Single Doc has Deleted! ID -> ", docRef.id);
+        setOrderItems(orderItems.filter((order) => order.id !== itemId));
+        setFilterOrder(orderItems.filter((order) => order.id !== itemId))
+        showAlert('Order Canceled.');
       } catch (e) {
         console.log("Cancel Order Problems -> ", e);
       }

@@ -7,13 +7,14 @@ import { signOut } from "firebase/auth";
 import { auth } from "../../context/firebase-config";
 
 const NavMenu = () => {
-  const { user, totalQuantity } = useGlobalContext();
+  const { user, totalQuantity, showAlert } = useGlobalContext();
 
   const logOut = async () => {
     if (!user) return;
     if (window.confirm('Do You Want To LogOut?')) {
       try {
         await signOut(auth);
+        showAlert('LogOut Successfull.')
       } catch (e) {
         console.log('User logout problems -> ', e);
       }

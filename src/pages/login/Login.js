@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { auth } from "../../context/firebase-config";
 import {BsEye, BsEyeSlash} from 'react-icons/bs';
 import "./login.css";
+import { useGlobalContext } from "../../context/context";
 
 const initialFormData = {
   email: '',
@@ -15,6 +16,7 @@ const Login = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isShow, setIsShow] = useState(false);
+  const {showAlert} = useGlobalContext();
   const passwordRef = useRef(null);
   const navigate = useNavigate();
 
@@ -42,6 +44,7 @@ const Login = () => {
       const { email, pwd } = formData;
       try {
         await signInWithEmailAndPassword(auth, email, pwd);
+        showAlert('LogIn Successfull.')
         setError(null);
         navigate('/');
       } catch (e) {
