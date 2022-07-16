@@ -35,7 +35,7 @@ const initialProductsAccount = {
 }
 
 const Payment = () => {
-  const {user} = useGlobalContext();
+  const {user, showAlert} = useGlobalContext();
   const [recentPdAccount, setRecentPdAccount] = useState(initialProductsAccount);
   const { totalMoney, totalQuantity } = recentPdAccount;
   const navigate = useNavigate();
@@ -59,7 +59,7 @@ const Payment = () => {
       unpaidOrderList.map(item => {
         return handleUnpaidOrdersToPaid(item);
       });
-      alert('Your Payment Successfull');
+      showAlert('Your Payment Successfull');
       navigate('/');
     }
   }

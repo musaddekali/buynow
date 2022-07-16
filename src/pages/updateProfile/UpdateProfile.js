@@ -17,7 +17,7 @@ const initialFormData = {
 const UpdateProfile = () => {
   const [formData, setFormData] = useState(initialFormData);
   const { name, mobile, address } = formData;
-  const { user, setUser } = useGlobalContext();
+  const { user, setUser, showAlert } = useGlobalContext();
   const [imgDataURl, setImgDataUrl] = useState(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -54,6 +54,7 @@ const UpdateProfile = () => {
       }
       await updateDoc(doc(db, 'users', user.uid), { ...formData, img: imgLink ? imgLink : imgDataURl });
       setUser({ ...user, ...formData, img: imgLink ? imgLink : imgDataURl });
+      showAlert('Profile Updated.')
       navigate('/profile');
     } catch (error) {
       setLoading(false);
@@ -81,7 +82,6 @@ const UpdateProfile = () => {
         <div className="row">
           <div className="col-lg-4 order-lg-2">
             <div className="update-profile-img-area">
-              {/* <img src={imgDataURl} width="120" height="120" alt="Profile" /> */}
               <UserAvatar src={imgDataURl} name={user?.name} />
               <label
                 htmlFor="file-upload"

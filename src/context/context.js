@@ -24,6 +24,7 @@ export const AppContextProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [totalMoney, setTotalMoney] = useState(0);
     const [totalQuantity, setTotalQuantity] = useState(0);
+    const [alert, setAlert] = useState({ show: false, msg: '' });
     const navigate = useNavigate();
 
     // Handle Add To Cart (If there item is available then update it otherwise add)
@@ -38,6 +39,7 @@ export const AppContextProvider = ({ children }) => {
             const cartExistItem = cart.find((item) => item.id === itemId);
             if (cartExistItem) {
                 // update
+                showAlert('Updated Quantity for this product.');
                 await updateDoc(cartRef, {
                     ...cartExistItem,
                     quantity: cartExistItem.quantity + qnt,
@@ -48,6 +50,7 @@ export const AppContextProvider = ({ children }) => {
             const newItem = products.find((item) => item.id === itemId);
             const { id, title, images, price } = newItem;
             if (newItem) {
+                showAlert('Product Added.');
                 await setDoc(cartRef, {
                     id,
                     title,
@@ -137,11 +140,14 @@ export const AppContextProvider = ({ children }) => {
                     });
             } else {
                 setUser(null);
-                console.log("User is signed out");
             }
         });
     }, []);
 
+    /// ALERT
+    const showAlert = (msg = '', show = true) => {
+        setAlert({ show, msg });
+    }
 
     return (
         <AppContext.Provider
@@ -153,6 +159,8 @@ export const AppContextProvider = ({ children }) => {
                 cart,
                 totalMoney,
                 totalQuantity,
+                alert,
+                showAlert
             }}
         >
             {children}

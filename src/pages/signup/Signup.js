@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { auth, db } from "../../context/firebase-config";
 import {BsEye, BsEyeSlash} from 'react-icons/bs';
 import "./signup.css";
+import { useGlobalContext } from "../../context/context";
 
 const initialFormData = {
   name: '',
@@ -17,6 +18,7 @@ const Signup = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [isShow, setIsShow] = useState(false);
+  const {showAlert} = useGlobalContext();
   const passwordRef = useRef(null);
   const navigate = useNavigate();
 
@@ -50,7 +52,8 @@ const Signup = () => {
           email: user.email,
           createdAt: Timestamp.fromDate(new Date()),
           lastUpdate: Timestamp.fromDate(new Date())
-        })
+        });
+        showAlert('Successfully Created an Account.')
         setError(null);
         navigate('/');
       } catch (e) {

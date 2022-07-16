@@ -7,24 +7,50 @@ import { useGlobalContext } from '../../context/context';
 
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);
-  const { user, handleAddToCart } = useGlobalContext();
+  const { user, handleAddToCart, showAlert } = useGlobalContext();
 
   /// Delete Wishlist Single Item
   const deleteSingleWishlistItem = async (itemId) => {
     if (window.confirm('Do you want to Remove this item?')) {
       try {
+        setWishlist(wishlist.filter(item => item.id !== itemId));
+        showAlert('Wishlist Item Deleted');
         const wishRef = doc(db, 'wishlist', user.uid, 'userWishlist', itemId.toString());
         await deleteDoc(wishRef);
-        setWishlist((w) => w.filter(item => item.id !== itemId));
       } catch (e) {
         console.log('Wishtlist single item Deleting Problems -> ', e.message);
       }
     }
   }
 
+  /// Clear All Wishlist items
+  function clearWishlistHistory() {
+    if (window.confirm('Do you want to clear all Wishlist items?')) {
+      const orderRef = collection(db, 'wishlist', user.uid, 'userWishlist');
+      setWishlist([]);
+      showAlert('All Wishlist item has cleared');
+      deleteCollection(orderRef);
+    }
+  }
+
+  async function deleteCollection(collectionRef) {
+    try {
+      const colSnap = await getDocs(collectionRef);
+      let docId = [];
+      colSnap.forEach(item => {
+        docId.push(item.data().id);
+      })
+      docId.forEach(async id => {
+        await deleteDoc(doc(collectionRef, id.toString()));
+      })
+    } catch (e) {
+      console.log("cart Collection delete Problems -> ", e)
+    }
+  }
+
   // Get all Wishlist 
   const getWishllist = useCallback(async () => {
-    if(!user) return;
+    if (!user) return;
     try {
       const wishRef = collection(db, 'wishlist', user.uid, 'userWishlist');
       const q = query(wishRef, orderBy('createdAt', 'desc'));
@@ -55,6 +81,16 @@ const Wishlist = () => {
         <div className="section-title">
           <h3>My Wishlist {wishlist.length} item</h3>
         </div>
+        {wishlist.length > 2 && (
+          <div className="clear-history mb-3">
+            <button
+              onClick={clearWishlistHistory}
+              className="btn primary-btn"
+            >
+              Clear All
+            </button>
+          </div>
+        )}
         <div className="wishlist-items">
           {
             wishlist.map(item => (
