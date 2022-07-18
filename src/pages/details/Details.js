@@ -7,10 +7,10 @@ import "react-responsive-carousel/lib/styles/carousel.min.css";
 import './details.css';
 import { Carousel } from 'react-responsive-carousel';
 import { useGlobalContext } from '../../context/context';
-import Loading from '../../components/loading/Loading';
+import DetailsLoading from '../../components/loading/DetailsLoading';
 
 const Details = () => {
-  const [product, setProduct] = useState();
+  const [product, setProduct] = useState(null);
   const [qnt, setQnt] = useState(1);
   const { handleAddToCart } = useGlobalContext();
   const { productId } = useParams();
@@ -39,7 +39,7 @@ const Details = () => {
 
   if (!product) {
     return (
-      <Loading />
+      <DetailsLoading />
     )
   }
 

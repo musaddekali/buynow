@@ -3,6 +3,7 @@ import {
   Route,
 } from "react-router-dom";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-loading-skeleton/dist/skeleton.css'
 import './style/app-global.css';
 // Pages 
 import NoPage from "./components/no-page/NoPage";

@@ -11,5 +11,5 @@
 - profile // done
 - update profile // done
 - User Auth (signup, login) // done
-- show/hide password field // working...
-- Global alert
+- show/hide password field // done
+- Global alert // done
