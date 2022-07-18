@@ -4,13 +4,14 @@ import './home.css';
 import ProductCard from './ProductCard';
 import { useGlobalContext } from '../../context/context';
 import { useNavigate } from "react-router-dom";
+import HomeLoading from "../../components/loading/HomeLoading";
 
 const Home = () => {
-  const {user, products, handleAddToCart, showAlert } = useGlobalContext();
+  const { user, products, handleAddToCart, showAlert } = useGlobalContext();
   const navigate = useNavigate();
   // Add Wishlist
   const handleAddToWishlist = async (itemId) => {
-    if(!user) {
+    if (!user) {
       navigate('/login');
       return;
     }
@@ -30,6 +31,10 @@ const Home = () => {
     } catch (e) {
       console.log('Item Wishlist adding problem -> ', e);
     }
+  }
+
+  if (!products.length) {
+    return <HomeLoading/>
   }
 
   return (

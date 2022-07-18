@@ -4,10 +4,12 @@ import { db } from '../../context/firebase-config';
 import './wishlist.css';
 import WishlistItem from './WishlistItem';
 import { useGlobalContext } from '../../context/context';
+import OrderLoading from '../../components/loading/OrderLoading';
 
 const Wishlist = () => {
   const [wishlist, setWishlist] = useState([]);
-  const { user, handleAddToCart, showAlert } = useGlobalContext();
+  const  { user, handleAddToCart, showAlert } = useGlobalContext();
+  const [loading,setLoading] = useState(true);
 
   /// Delete Wishlist Single Item
   const deleteSingleWishlistItem = async (itemId) => {
@@ -66,6 +68,20 @@ const Wishlist = () => {
   useEffect(() => {
     getWishllist();
   }, [getWishllist]);
+
+  // Check Loading 
+  useEffect(() =>{
+    const timeId = setTimeout(() => {
+      setLoading(false);
+    }, 3000);
+    return () => clearTimeout(timeId)
+  }, []);
+
+  // Loading Part 
+
+  if(loading) {
+    return <OrderLoading/>
+  }
 
   if (!wishlist.length) {
     return (

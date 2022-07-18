@@ -14,12 +14,14 @@ import { useGlobalContext } from "../../context/context";
 import { db } from "../../context/firebase-config";
 import OrderItem from "./OrderItem";
 import "./orders.css";
+import OrderLoading from '../../components/loading/OrderLoading'
 
 const Orders = () => {
   const { user, showAlert } = useGlobalContext();
   const [orderItems, setOrderItems] = useState([]);
   const [filterOrder, setFilterOrder] = useState([]);
   const [filterValue, setFilterValue] = useState("all");
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
   /// Handle filter
@@ -164,6 +166,20 @@ const Orders = () => {
   useEffect(() => {
     getOrderItems();
   }, [getOrderItems]);
+
+  // Check Loading 
+  useEffect(() => {
+    const timeId = setTimeout(() => {
+      setLoading(false)
+    }, 3000);
+    return () => clearTimeout(timeId);
+  }, []);
+
+  // Return part 
+
+  if (loading) {
+    return <OrderLoading />
+  }
 
   if (!orderItems.length) {
     return (
