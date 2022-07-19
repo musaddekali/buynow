@@ -7,7 +7,7 @@ import { signOut } from "firebase/auth";
 import { auth } from "../../context/firebase-config";
 
 const NavMenu = () => {
-  const { user, totalQuantity, showAlert } = useGlobalContext();
+  const { user, totalQuantity, showAlert, setSearchText } = useGlobalContext();
 
   const logOut = async () => {
     if (!user) return;
@@ -35,13 +35,17 @@ const NavMenu = () => {
         </div>
         <div className="nav-menu-middle">
           <div className="nav-menu-search nav-menu-height">
-            <input type="text" placeholder="Search..." />
+            <input
+              onChange={(e) => setSearchText(e.target.value)}
+              type="text"
+              placeholder="Search..."
+            />
           </div>
         </div>
         <div className="nav-menu-right">
           <div className="nav-menu-links">
             {
-              user ? <NavmenuUserLink logOut={logOut}/> : <NavmenuGuestLink />
+              user ? <NavmenuUserLink logOut={logOut} /> : <NavmenuGuestLink />
             }
             <Link className="cart nav-a nav-menu-height" to="/cart">
               <div className="cart-badge-wrap">
