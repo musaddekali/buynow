@@ -1,13 +1,14 @@
+import { useEffect } from "react";
 import { doc, setDoc, Timestamp } from "firebase/firestore";
 import { db } from "../../context/firebase-config";
-import './home.css';
 import ProductCard from './ProductCard';
 import { useGlobalContext } from '../../context/context';
 import { useNavigate } from "react-router-dom";
 import HomeLoading from "../../components/loading/HomeLoading";
+import './home.css';
 
 const Home = () => {
-  const { user, products, handleAddToCart, showAlert } = useGlobalContext();
+  const { user, products, handleAddToCart, showAlert, searchText, setSearchText } = useGlobalContext();
   const navigate = useNavigate();
   // Add Wishlist
   const handleAddToWishlist = async (itemId) => {
@@ -33,9 +34,30 @@ const Home = () => {
     }
   }
 
+  useEffect(() => {
+    setSearchText('');
+    console.log('Search field cleared');
+  }, []);
+
   if (!products.length) {
-    return <HomeLoading/>
+    return <HomeLoading />
   }
+
+  let productList = [];
+  products.forEach(prod => {
+    if (prod.title.toLowerCase().indexOf(searchText.toLowerCase()) === -1) {
+      return;
+    }
+    productList.push(
+      <ProductCard
+        key={prod.id}
+        product={prod}
+        handleAddToCart={handleAddToCart}
+        handleAddToWishlist={handleAddToWishlist}
+      />
+    )
+  })
+
 
   return (
     <section className="products">
@@ -45,14 +67,7 @@ const Home = () => {
         </div>
         <div className="product-list">
           {
-            products.map(pro => (
-              <ProductCard
-                key={pro.id}
-                product={pro}
-                handleAddToCart={handleAddToCart}
-                handleAddToWishlist={handleAddToWishlist}
-              />
-            ))
+            productList
           }
         </div>
       </div>

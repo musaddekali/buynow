@@ -24,6 +24,7 @@ export const AppContextProvider = ({ children }) => {
     const [cart, setCart] = useState([]);
     const [totalMoney, setTotalMoney] = useState(0);
     const [totalQuantity, setTotalQuantity] = useState(0);
+    const [searchText, setSearchText] = useState('');
     const [alert, setAlert] = useState({ show: false, msg: '' });
     const navigate = useNavigate();
 
@@ -155,6 +156,8 @@ export const AppContextProvider = ({ children }) => {
                 user,
                 setUser,
                 products,
+                searchText,
+                setSearchText,
                 handleAddToCart,
                 cart,
                 totalMoney,
