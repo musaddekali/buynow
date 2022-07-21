@@ -36,8 +36,7 @@ const Home = () => {
 
   useEffect(() => {
     setSearchText('');
-    console.log('Search field cleared');
-  }, []);
+  }, [setSearchText]);
 
   if (!products.length) {
     return <HomeLoading />
