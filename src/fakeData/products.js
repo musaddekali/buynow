@@ -1,5 +1,5 @@
 // online api link -- https://api.escuelajs.co/api/v1/products?offset=0&limit=30
-export const products = [
+export const PRODUCTS = [
     {
         id: 1,
         title: "Gorgeous Granite Pizza",
