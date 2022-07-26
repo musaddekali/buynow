@@ -30,13 +30,12 @@ enableIndexedDbPersistence(db)
 
 
 
-// firebase keys.
-// REACT_APP_API_KEY = AIzaSyCBODWPaNdG2vwFMf_TcRVnOGBPQUrPjSk
-// REACT_APP_AUTH_DOMAIN  = buynow-1.firebaseapp.com
-// REACT_APP_PROJECT_ID = buynow-1
-// REACT_APP_STORAGE_BUCKET = buynow-1.appspot.com
-// REACT_APP_MESSAGEING_SENDER_ID = 35338344803
-// REACT_APP_APP_ID = 1:35338344803:web:8ffbcced79b361996c5b56
+  // REACT_APP_API_KEY = AIzaSyDA_izUz-9qBeQ9HQaox9yUV3-f-juQp2c
+  // REACT_APP_AUTH_DOMAIN  = buynow-ab983.firebaseapp.com
+  // REACT_APP_PROJECT_ID = buynow-ab983
+  // REACT_APP_STORAGE_BUCKET = buynow-ab983.appspot.com
+  // REACT_APP_MESSAGEING_SENDER_ID = 1095260388057
+  // REACT_APP_APP_ID = 1:1095260388057:web:909f77c9626ce130e21cc8
 
 
 
